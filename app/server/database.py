@@ -1,14 +1,24 @@
 from pymongo import MongoClient
 
-# MongoDB connection
-client = MongoClient('mongodb://localhost:27017/')
 
-#select DB
-libary_db = client['libary']
+class DatabaseManager:
+    client = MongoClient('mongodb://localhost:27017/')
+    libary_db = client['libary']
+    
+    books_collection = libary_db['books']
+    readers_collection = libary_db['readers']
+    administrators_collection = libary_db['administrators']
+    borrowing_books_collection = libary_db['borrowing_books']
 
-#select collections
-books_collection = libary_db['books']
-readers_collection = libary_db['readers']
-administrators_collection = libary_db['administrators']
-borrowing_books_collection = libary_db['borrowing_books']
+    def is_book_duplicate(self, title, author_first_name, author_second_name, publish_year):
+ 
+        if self.books_collection.count_documents({
+            'title': title,
+            'author_first_name': author_first_name,
+            'author_second_name': author_second_name,
+            'publish_year': publish_year}, limit= 1):
 
+            return True
+
+        else:
+            return False
