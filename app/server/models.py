@@ -24,5 +24,22 @@ class Reader(BaseModel):
             }
         }
 
+class Book(BaseModel):
+    title: str = Field(...)
+    publish_year: int = Field(...)
+    author_first_name: str = Field(...)
+    author_second_name: str = Field(...)
+    publishing_house: str = Field(...)
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "name": "Jan",
+                "publish_year": "Kowalski",
+                "description": "Świetna powieść fantastyczna",
+                "book_genre": "Fantasy",
+            }
+        }
+
 
 
