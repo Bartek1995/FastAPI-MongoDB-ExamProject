@@ -1,18 +1,17 @@
-from multiprocessing import context
-from turtle import pu, title
-from urllib import response
+from threading import local
+import inspect
+from typing import Optional
 from fastapi import FastAPI, HTTPException, Form, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import HTMLResponse
-from h11 import Data
-from .forms import LoginForm
 from .auth import AuthHandler
 from .schemas import AuthDetails
 from .database import *
 from .models import Book
 from starlette.responses import RedirectResponse
+
 
 
 app = FastAPI()
@@ -59,6 +58,33 @@ def login(request: Request):
 def new_book(request: Request):
     return templates.TemplateResponse("new_book.html", {"request": request})
 
+@app.post('/dashboard/new_book', response_class=HTMLResponse)
+def new_book(request: Request, title:str = Form(...), publish_year:int = Form(..., min=0, max=2023), author_first_name: str = Form(...), author_second_name: str = Form(...),publishing_house: str = Form(...)):
+
+    context = {
+        "request": request,
+    }
+
+    is_book_exist = database_manager.is_book_duplicate(title,author_first_name,author_second_name, publish_year)
+
+    if not is_book_exist:
+        database_manager.books_collection.insert_one(
+            {
+                'title': title,
+                'author_first_name': author_first_name,
+                'author_second_name': author_second_name,
+                'publish_year': publish_year,
+                'publishing_house': publishing_house
+            }
+        )
+        context['new_book_confirmation'] = "Książka została dodana do bazy danych" 
+    else:
+        context['new_book_error'] = "Książka istnieje w bazie danych"
+
+    return templates.TemplateResponse("new_book.html", context)
+
+
+
 @app.get("/dashboard/book_list", response_class=HTMLResponse)
 def book_list(request: Request):
     book_list = database_manager.books_collection.find()
@@ -68,8 +94,31 @@ def book_list(request: Request):
         "book_list" : book_list,
     }
     
-
     return templates.TemplateResponse("book_list.html", context)
+
+@app.post("/dashboard/book_list", response_class=HTMLResponse)
+def book_list(request: Request, title:Optional[str] = Form(None), publish_year:Optional[int] = Form(None), author_first_name: Optional[str] = Form(None), author_second_name: Optional[str] = Form(None),publishing_house: Optional[str] = Form(None)):
+    
+    list_of_arguments_with_value = {}
+    
+    frame = inspect.currentframe()
+    
+    args, _, _, values = inspect.getargvalues(frame)
+    for element in args:
+        if values[element] != None and element != 'request':
+            print(element)
+            list_of_arguments_with_value[element] = values[element]
+        
+    book_list = database_manager.books_collection.find(list_of_arguments_with_value)
+    
+    context = {
+        "request" : request,
+        "book_list" : book_list,
+    }
+    
+    return templates.TemplateResponse("book_list.html", context)
+
+
 
 @app.post('/')
 def login(request: Request, username:str = Form(...), password:str = Form(...), ):
@@ -100,36 +149,25 @@ def dashboard(request: Request):
     return templates.TemplateResponse("dashboard.html", context)
 
 
-@app.post('/dashboard/new_book', response_class=HTMLResponse)
-def new_book(request: Request, title:str = Form(...), publish_year:int = Form(..., min=0, max=2023), author_first_name: str = Form(...), author_second_name: str = Form(...),publishing_house: str = Form(...)):
-
-    context = {
-        "request": request,
-    }
-
-    is_book_exist = database_manager.is_book_duplicate(title,author_first_name,author_second_name, publish_year)
-
-    if not is_book_exist:
-        database_manager.books_collection.insert_one(
-            {
-                'title': title,
-                'author_first_name': author_first_name,
-                'author_second_name': author_second_name,
-                'publish_year': publish_year,
-                'publishing_house': publishing_house
-            }
-        )
-        context['new_book_confirmation'] = "Książka została dodana do bazy danych" 
-    else:
-        context['new_book_error'] = "Książka istnieje w bazie danych"
-
-    return templates.TemplateResponse("new_book.html", context)
-
 
 @app.get("/dashboard/edit_book/{id}",response_class=HTMLResponse)
 def edit_book(id:str, request:Request):
     book = database_manager.get_book_by_id(id)
     return templates.TemplateResponse("edit_book.html", {"request": request, "book": book})
+
+
+@app.get("/dashboard/delete_book_ask/{id}",response_class=HTMLResponse)
+def delete_book(id:str, request:Request):
+    book = database_manager.get_book_by_id(id)
+    return templates.TemplateResponse("delete_book.html", {"request": request, "book": book})
+
+@app.get("/dashboard/delete/{id}",response_class=HTMLResponse)
+def delete_fish(id:str, request:Request):
+    result = database_manager.books_collection.delete_one({'_id':ObjectId(id)})
+    response = RedirectResponse(url="/dashboard")
+    response.status_code = 302
+    return response
+
 
 
 @app.post("/dashboard/edit_book/{id}",response_class=HTMLResponse)
@@ -143,23 +181,22 @@ def update_book(id:str, request:Request, title:str = Form(...), publish_year:int
     }
 
     
-    update_api_data(book, id)
+    update_book_data(book, id)
     
     context['edit_book_confirmation'] = "Dane książki zostały zmodyfikowane"
     
     return templates.TemplateResponse("edit_book.html", context)
     
     
-@app.put("/updateapi", status_code=202)
-def update_api_data(book:Book, id:str):
-    print("Data updated")
+@app.put("/update_book", status_code=202)
+def update_book_data(book:Book, id:str):
     result = database_manager.books_collection.update_one({'_id':ObjectId(id)},
                                                             {"$set" : 
                                                                 {
                                                                     'title':book.title,
                                                                     'author_first_name' : book.author_first_name,
                                                                     'author_second_name' : book.author_second_name,
-                                                                    'publishin_year' : book.publish_year,
+                                                                    'publish_year' : book.publish_year,
                                                                     'publishing_house' : book.publishing_house,
                                                                 }
                                                             }
