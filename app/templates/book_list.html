@@ -125,9 +125,32 @@
             <td>{{book['publishing_house']}}</td>
             <td>
               <a data-bs-toggle="tooltip" title="Modyfikuj"  href="/dashboard/edit_book/{{book['_id']}}"><i class="fa-solid fa-pen-to-square m-1"></i></a>
-              <a data-bs-toggle="tooltip" title="Skasuj" href="#"><i class="fa-solid fa-trash-can m-1"></i></a>
+              <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal{{book['_id']}}"><i class="fa-solid fa-trash-can m-1"></i></button>
             </td>
           </tr>
+          <div class="modal fade" id="exampleModal{{book['_id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Potwierdzenie usunięcia</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                  <p>Czy chcesz usunąć wybraną książkę?</p>  
+                  <p>Tytuł: <span>{{book['title']}}</span></p>
+                  <p>Rok: <span>{{book['publish_year']}}</span></p>
+                  <p>Imie i nazwisko autora: <span>{{book['author_first_name']}} {{book['author_second_name']}}</span></p>
+                  <p>Wydawnictwo: <span>{{book['publishing_house']}}</span></p>
+                </div>
+                
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                  <a href="/dashboard/delete/{{book['_id']}}" class="btn btn-danger">Usuń</a>
+                </div>
+              </div>
+            </div>
+          </div>
           {% endfor %}
         </tbody>
       </table>
@@ -136,6 +159,8 @@
   
 
 
+
+  <script src="{{ url_for('static', path='js/js.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 
 </body>
