@@ -1,4 +1,6 @@
 from multiprocessing import context
+from turtle import pu, title
+from urllib import response
 from fastapi import FastAPI, HTTPException, Form, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -9,6 +11,7 @@ from .forms import LoginForm
 from .auth import AuthHandler
 from .schemas import AuthDetails
 from .database import *
+from .models import Book
 from starlette.responses import RedirectResponse
 
 
@@ -93,6 +96,7 @@ def dashboard(request: Request):
     context = {
         "request" : request,
     }
+
     return templates.TemplateResponse("dashboard.html", context)
 
 
@@ -119,7 +123,44 @@ def new_book(request: Request, title:str = Form(...), publish_year:int = Form(..
     else:
         context['new_book_error'] = "Książka istnieje w bazie danych"
 
-
-
     return templates.TemplateResponse("new_book.html", context)
 
+
+@app.get("/dashboard/edit_book/{id}",response_class=HTMLResponse)
+def edit_book(id:str, request:Request):
+    book = database_manager.get_book_by_id(id)
+    return templates.TemplateResponse("edit_book.html", {"request": request, "book": book})
+
+
+@app.post("/dashboard/edit_book/{id}",response_class=HTMLResponse)
+def update_book(id:str, request:Request, title:str = Form(...), publish_year:int = Form(..., min=0, max=2023), author_first_name: str = Form(...), author_second_name: str = Form(...),publishing_house: str = Form(...)):
+    
+    book = Book(title=title, publish_year=publish_year, author_first_name=author_first_name, author_second_name=author_second_name, publishing_house=publishing_house)
+    
+    context = {
+        "request": request,
+        "book": book,
+    }
+
+    
+    update_api_data(book, id)
+    
+    context['edit_book_confirmation'] = "Dane książki zostały zmodyfikowane"
+    
+    return templates.TemplateResponse("edit_book.html", context)
+    
+    
+@app.put("/updateapi", status_code=202)
+def update_api_data(book:Book, id:str):
+    print("Data updated")
+    result = database_manager.books_collection.update_one({'_id':ObjectId(id)},
+                                                            {"$set" : 
+                                                                {
+                                                                    'title':book.title,
+                                                                    'author_first_name' : book.author_first_name,
+                                                                    'author_second_name' : book.author_second_name,
+                                                                    'publishin_year' : book.publish_year,
+                                                                    'publishing_house' : book.publishing_house,
+                                                                }
+                                                            }
+                                                        )
