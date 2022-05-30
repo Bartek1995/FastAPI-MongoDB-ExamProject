@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 
 class DatabaseManager:
@@ -22,3 +23,10 @@ class DatabaseManager:
 
         else:
             return False
+        
+    
+    def get_book_by_id(self, id): 
+        book = self.books_collection.find_one({'_id' : ObjectId(id)})
+        
+        return book
+        
