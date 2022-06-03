@@ -30,3 +30,13 @@ class DatabaseManager:
         
         return book
         
+        
+    def get_reader_list_with_modified_data_field(self):
+        reader_list = self.readers_collection.find()
+        
+        reader_list = list(reader_list)
+        
+        for element in reader_list:
+            element['born_date'] = element['born_date'].date()
+            
+        return reader_list
