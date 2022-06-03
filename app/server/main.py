@@ -1,8 +1,7 @@
+import uvicorn
+from pathlib import Path
 from datetime import date
 from datetime import datetime
-from itertools import count
-import statistics
-from threading import local
 import inspect
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Form, Request, Depends
@@ -10,27 +9,32 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import HTMLResponse
-from .auth import AuthHandler
-from .schemas import AuthDetails
-from .database import *
-from .models import Book
+from auth import AuthHandler
+from schemas import AuthDetails
+from database import *
+from models import Book
 from starlette.responses import RedirectResponse
+import pymongo
 
 
 app = FastAPI()
 auth_handler = AuthHandler()
 database_manager = DatabaseManager()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, debug=True)
+
+current_file = Path(__file__)
+current_file_dir = current_file.parent
+project_root = current_file_dir.parent
+project_root_absolute = project_root.resolve()
+static_root_absolute = project_root_absolute / "static"
+templates_root_absolute = project_root_absolute / "templates"
 
 # static files settings
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
-
-
-@app.post('/token')
-async def token(form_data: OAuth2PasswordRequestForm = Depends()):
-    return {'access_token'}
+app.mount("/static", StaticFiles(directory=static_root_absolute), name='static')
+templates = Jinja2Templates(directory=templates_root_absolute)
 
 
 @app.post('/register', status_code=201)
@@ -76,12 +80,10 @@ def dashboard(request: Request):
 
     context = {
         "request": request,
-        "books_in_database" : database_manager.books_collection.find().count(),
-        "readers_in_database" : database_manager.readers_collection.find().count(),
-        "borrowing_books_in_database" : database_manager.borrowing_books_collection.find().count(),
+        "books_in_database": database_manager.books_collection.find().count(),
+        "readers_in_database": database_manager.readers_collection.find().count(),
+        "borrowing_books_in_database": database_manager.borrowing_books_collection.find().count(),
     }
-    
-
 
     return templates.TemplateResponse("dashboard.html", context)
 
@@ -91,24 +93,35 @@ def new_book(request: Request):
     return templates.TemplateResponse("new_reader.html", {"request": request})
 
 
+@app.get("/dashboard/reader_list", response_class=HTMLResponse)
+def reader_list(request: Request):
+
+    reader_list = database_manager.get_reader_list_with_modified_data_field()
+
+    context = {
+        "request": request,
+        "reader_list": reader_list,
+    }
+
+    return templates.TemplateResponse("reader_list.html", context)
+
+
 @app.post('/dashboard/new_reader', response_class=HTMLResponse)
 def new_book(
     request: Request,
     reader_first_name: str = Form(...),
     reader_second_name: str = Form(...),
     born_date: date = Form(...)
-    ):
+):
 
     context = {
         "request": request,
     }
-    
 
     temp_date = born_date
     temp_time = datetime.min.time()
     born_date = datetime.combine(temp_date, temp_time)
-    
-    
+
     database_manager.readers_collection.insert_one(
         {
             'reader_first_name': reader_first_name,
@@ -118,7 +131,6 @@ def new_book(
         }
     )
     context['new_reader_confirmation'] = "Utworzono nowego czytelnika"
-
 
     return templates.TemplateResponse("new_reader.html", context)
 
@@ -168,7 +180,13 @@ def book_list(request: Request):
 
 
 @app.post("/dashboard/book_list", response_class=HTMLResponse)
-def book_list(request: Request, title: Optional[str] = Form(None), publish_year: Optional[int] = Form(None), author_first_name: Optional[str] = Form(None), author_second_name: Optional[str] = Form(None), publishing_house: Optional[str] = Form(None)):
+def book_list(request: Request,
+              title: Optional[str] = Form(None),
+              publish_year: Optional[int] = Form(None),
+              author_first_name: Optional[str] = Form(None),
+              author_second_name: Optional[str] = Form(None),
+              publishing_house: Optional[str] = Form(None)
+              ):
 
     list_of_arguments_with_value = {}
 
