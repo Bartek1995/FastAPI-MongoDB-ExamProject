@@ -90,6 +90,7 @@ def dashboard(request: Request):
 
 @app.get("/dashboard/new_reader", response_class=HTMLResponse)
 def new_book(request: Request):
+
     return templates.TemplateResponse("new_reader.html", {"request": request})
 
 
@@ -221,11 +222,21 @@ def delete_book(id: str, request: Request):
     return templates.TemplateResponse("delete_book.html", {"request": request, "book": book})
 
 
-@app.get("/dashboard/delete/{id}", response_class=HTMLResponse)
-def delete_fish(id: str, request: Request):
-    result = database_manager.books_collection.delete_one(
+@app.get("/dashboard/delete/{object_type}/{id}", response_class=HTMLResponse)
+def delete_fish(id: str, request: Request, object_type : str):
+    
+    match object_type:
+        case "book":
+            result = database_manager.books_collection.delete_one(
         {'_id': ObjectId(id)})
-    response = RedirectResponse(url="/dashboard")
+            response = RedirectResponse(url="/dashboard/book_list")
+            
+        case "reader":
+            result = database_manager.readers_collection.delete_one(
+        {'_id': ObjectId(id)})
+            response = RedirectResponse(url="/dashboard/reader_list")
+            
+
     response.status_code = 302
     return response
 
