@@ -36,8 +36,15 @@ class DatabaseManager:
         
         return reader
         
-    def get_reader_list_with_modified_data_field(self):
+    def get_reader_list_with_modified_data_field(self, existing_reader_list=None):
+        """
+        Get reader list and modify with modified born_date format from datetime to date.\n 
+        You can pass existing reader list as optional argument to modify that list.
+        """
         reader_list = self.readers_collection.find()
+        
+        if existing_reader_list != None:
+            reader_list = existing_reader_list
         
         reader_list = list(reader_list)
         
