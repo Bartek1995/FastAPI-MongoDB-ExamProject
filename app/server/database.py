@@ -29,7 +29,12 @@ class DatabaseManager:
         book = self.books_collection.find_one({'_id' : ObjectId(id)})
         
         return book
+    
+    def get_reader_by_id(self, id): 
+        reader = self.readers_collection.find_one({'_id' : ObjectId(id)})
+        reader['born_date'] = reader['born_date'].date()
         
+        return reader
         
     def get_reader_list_with_modified_data_field(self):
         reader_list = self.readers_collection.find()
@@ -40,3 +45,25 @@ class DatabaseManager:
             element['born_date'] = element['born_date'].date()
             
         return reader_list
+    
+    
+    def get_database_collection_by_arguments(self, name_of_collection, **kwargs):
+        """
+        Returns database cursor by given arguments in **kwargs \n
+        name_of_collection - name of collection in MongoDB
+        """
+    
+        collection_of_arguments_to_search_in_db = {}
+        
+        for element in kwargs:
+            if kwargs[element] != None:
+                collection_of_arguments_to_search_in_db[element] = kwargs[element]
+
+        match name_of_collection:
+            case "book":
+                return self.books_collection.find(collection_of_arguments_to_search_in_db)
+            
+            case "reader":
+                return self.readers_collection.find(collection_of_arguments_to_search_in_db)
+                
+                
