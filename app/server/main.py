@@ -1,20 +1,18 @@
+
 import uvicorn
 from pathlib import Path
 from datetime import date
 from datetime import datetime
-import inspect
 from typing import Optional
-from fastapi import FastAPI, HTTPException, Form, Request, Depends
+from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import HTMLResponse
 from auth import AuthHandler
 from schemas import AuthDetails
 from database import *
 from models import Book
 from starlette.responses import RedirectResponse
-import pymongo
 
 
 app = FastAPI()
@@ -36,6 +34,15 @@ templates_root_absolute = project_root_absolute / "templates"
 app.mount("/static", StaticFiles(directory=static_root_absolute), name='static')
 templates = Jinja2Templates(directory=templates_root_absolute)
 
+
+def change_date_format(date_to_modify):
+    temp_date = date_to_modify
+    temp_time = datetime.min.time()
+    
+    return datetime.combine(temp_date, temp_time)
+    
+    
+    
 
 @app.post('/register', status_code=201)
 def register(auth_details: AuthDetails):
@@ -107,6 +114,33 @@ def reader_list(request: Request):
     return templates.TemplateResponse("reader_list.html", context)
 
 
+@app.post("/dashboard/reader_list", response_class=HTMLResponse)
+def reader_list(request: Request,
+              reader_first_name: Optional[str] = Form(None),
+              reader_second_name: Optional[str] = Form(None),
+              born_date: Optional[date] = Form(None),
+              card_number: Optional[int] = Form(None)
+              ):
+
+    if born_date:
+        born_date = change_date_format(born_date)
+    
+    reader_list = database_manager.get_database_collection_by_arguments(
+        'reader',
+        reader_first_name=reader_first_name,
+        reader_second_name=reader_second_name,
+        born_date=born_date,
+        card_number=card_number)
+    
+    modified_reader_list = database_manager.get_reader_list_with_modified_data_field(reader_list)    
+    context = {
+        "request": request, 
+        "reader_list": modified_reader_list,
+    }
+
+    return templates.TemplateResponse("reader_list.html", context)
+
+
 @app.post('/dashboard/new_reader', response_class=HTMLResponse)
 def new_book(
     request: Request,
@@ -119,9 +153,7 @@ def new_book(
         "request": request,
     }
 
-    temp_date = born_date
-    temp_time = datetime.min.time()
-    born_date = datetime.combine(temp_date, temp_time)
+    born_date = change_date_format(born_date)
 
     database_manager.readers_collection.insert_one(
         {
@@ -135,6 +167,10 @@ def new_book(
 
     return templates.TemplateResponse("new_reader.html", context)
 
+@app.get("/dashboard/edit_reader/{id}", response_class=HTMLResponse)
+def edit_reader(id: str, request: Request):
+    reader = database_manager.get_reader_by_id(id)
+    return templates.TemplateResponse("edit_reader.html", {"request": request, "reader": reader})
 
 @app.get("/dashboard/new_book", response_class=HTMLResponse)
 def new_book(request: Request):
@@ -189,21 +225,17 @@ def book_list(request: Request,
               publishing_house: Optional[str] = Form(None)
               ):
 
-    list_of_arguments_with_value = {}
 
-    frame = inspect.currentframe()
-
-    args, _, _, values = inspect.getargvalues(frame)
-    for element in args:
-        if values[element] != None and element != 'request':
-            print(element)
-            list_of_arguments_with_value[element] = values[element]
-
-    book_list = database_manager.books_collection.find(
-        list_of_arguments_with_value)
-
+    book_list = database_manager.get_database_collection_by_arguments(
+        'book',
+        title=title,
+        publish_year=publish_year,
+        author_first_name=author_first_name,
+        author_second_name=author_second_name,
+        publishing_house=publishing_house)
+    
     context = {
-        "request": request,
+        "request": request, 
         "book_list": book_list,
     }
 
