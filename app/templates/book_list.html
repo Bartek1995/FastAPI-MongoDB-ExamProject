@@ -6,7 +6,7 @@
   
     <h2 class="text-center my-5">Lista książek</h2>
 
-    <section class="book-search">
+    <section class="book-search search">
       <div class="container">
         <div class="accordion" id="accordionExample">
           <div class="accordion-item">
@@ -107,7 +107,7 @@
                 
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-                  <a href="/dashboard/delete/{{book['_id']}}" class="btn btn-danger">Usuń</a>
+                  <a href="/dashboard/delete/book/{{book['_id']}}" class="btn btn-danger">Usuń</a>
                 </div>
               </div>
             </div>
