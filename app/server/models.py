@@ -9,9 +9,9 @@ class Admin(BaseModel):
 
 
 class Reader(BaseModel):
-    first_name: str = Field(...)
-    second_name: str = Field(...)
-    born: datetime = None
+    reader_first_name: str = Field(...)
+    reader_second_name: str = Field(...)
+    born_date: datetime = None
     card_number = int = Field(default=1)
 
     class Config:
