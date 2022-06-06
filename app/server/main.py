@@ -1,4 +1,5 @@
 
+import re
 import uvicorn
 from pathlib import Path
 from datetime import date
@@ -11,7 +12,7 @@ from fastapi.responses import HTMLResponse
 from auth import AuthHandler
 from schemas import AuthDetails
 from database import *
-from models import Book
+from models import Book, Reader
 from starlette.responses import RedirectResponse
 
 
@@ -42,8 +43,6 @@ def change_date_format(date_to_modify):
     return datetime.combine(temp_date, temp_time)
     
     
-    
-
 @app.post('/register', status_code=201)
 def register(auth_details: AuthDetails):
     if database_manager.administrators_collection.find_one({'username': auth_details.username}) != None:
@@ -96,8 +95,7 @@ def dashboard(request: Request):
 
 
 @app.get("/dashboard/new_reader", response_class=HTMLResponse)
-def new_book(request: Request):
-
+def new_reader(request: Request):
     return templates.TemplateResponse("new_reader.html", {"request": request})
 
 
@@ -142,7 +140,7 @@ def reader_list(request: Request,
 
 
 @app.post('/dashboard/new_reader', response_class=HTMLResponse)
-def new_book(
+def new_reader(
     request: Request,
     reader_first_name: str = Form(...),
     reader_second_name: str = Form(...),
@@ -167,10 +165,37 @@ def new_book(
 
     return templates.TemplateResponse("new_reader.html", context)
 
+
 @app.get("/dashboard/edit_reader/{id}", response_class=HTMLResponse)
 def edit_reader(id: str, request: Request):
     reader = database_manager.get_reader_by_id(id)
     return templates.TemplateResponse("edit_reader.html", {"request": request, "reader": reader})
+
+
+@app.post("/dashboard/edit_reader/{id}", response_class=HTMLResponse)
+def edit_reader(id: str, 
+                request: Request, 
+                reader_first_name: str = Form(...), 
+                reader_second_name: str = Form(...), 
+                born_date: date = Form(...)):
+    
+    reader = Reader(
+                reader_first_name=reader_first_name,
+                reader_second_name=reader_second_name, 
+                born_date=change_date_format(born_date))
+    
+    update_reader_data(reader, id)
+    reader.born_date = reader.born_date.date()
+    
+    context = {
+        "request": request,
+        "reader": reader,
+    }
+
+    context['edit_reader_confirmation'] = "Dane czytelnika zostały zmodyfikowane"
+
+    return templates.TemplateResponse("edit_reader.html", context)
+
 
 @app.get("/dashboard/new_book", response_class=HTMLResponse)
 def new_book(request: Request):
@@ -268,16 +293,24 @@ def delete_fish(id: str, request: Request, object_type : str):
         {'_id': ObjectId(id)})
             response = RedirectResponse(url="/dashboard/reader_list")
             
-
     response.status_code = 302
     return response
 
 
 @app.post("/dashboard/edit_book/{id}", response_class=HTMLResponse)
-def update_book(id: str, request: Request, title: str = Form(...), publish_year: int = Form(..., min=0, max=2023), author_first_name: str = Form(...), author_second_name: str = Form(...), publishing_house: str = Form(...)):
+def update_book(id: str, 
+                request: Request, 
+                title: str = Form(...), 
+                publish_year: int = Form(..., min=0, max=2023), 
+                author_first_name: str = Form(...), 
+                author_second_name: str = Form(...), 
+                publishing_house: str = Form(...)):
 
-    book = Book(title=title, publish_year=publish_year, author_first_name=author_first_name,
-                author_second_name=author_second_name, publishing_house=publishing_house)
+    book = Book(title=title, 
+                publish_year=publish_year, 
+                author_first_name=author_first_name,
+                author_second_name=author_second_name, 
+                publishing_house=publishing_house)
 
     context = {
         "request": request,
@@ -285,7 +318,6 @@ def update_book(id: str, request: Request, title: str = Form(...), publish_year:
     }
 
     update_book_data(book, id)
-
     context['edit_book_confirmation'] = "Dane książki zostały zmodyfikowane"
 
     return templates.TemplateResponse("edit_book.html", context)
@@ -303,5 +335,19 @@ def update_book_data(book: Book, id: str):
                 'publish_year': book.publish_year,
                 'publishing_house': book.publishing_house,
             }
-         }
+        }
+    )
+    
+    
+@app.put("/update_reader", status_code=202)
+def update_reader_data(reader: Reader, id: str):
+    result = database_manager.readers_collection.update_one(
+        {'_id': ObjectId(id)},
+        {"$set":
+            {
+                'reader_first_name': reader.reader_first_name,
+                'reader_second_name': reader.reader_second_name,
+                'born_date': reader.born_date,
+            }
+        }
     )
