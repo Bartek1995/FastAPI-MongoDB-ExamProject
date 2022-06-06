@@ -1,0 +1,72 @@
+{% extends "main_template.html" %}
+{% block title %} - Nowe wypożyczenie{% endblock %}
+
+{% block content %}
+
+  <section class="form-items py-5">
+    
+    {% if new_borrowing_confirmation %}
+    <div class="alert alert-success text-center" role="alert">
+      <div class="row justify-content-end">
+        <div class="col-4 d-flex justify-content-center">
+          <p class="m-0">{{new_borrowing_confirmation}}</p>
+        </div>
+        <div class="col-4 d-flex justify-content-end">
+          <button type="button" class="btn-close ms-auto" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+
+    {% if new_borrowing_error %}
+    <div class="alert alert-danger text-center" role="alert">
+      <p class="m-0">{{new_borrowing_error}}</p>
+    </div>
+    {% endif %}
+
+    <div class="container d-flex flex-column align-items-center text-center">
+      <h2 class="mb-4">Utwórz raport wypożyczenia</h2>
+        <form method="post">
+
+            <div class="form-group mb-4">
+              <label for="formGroupExampleInput2">Wybór czytelnika</label><br>
+              <select id="reader-select" name="card_number">  
+                <option value="">Rozwiń listę</option>
+                {% for reader in reader_list %}
+                <option value="{{reader['card_number']}}">{{reader['reader_first_name']}} {{reader['reader_second_name']}}</option>
+                {% endfor %}
+               </select>
+            </div>
+
+            <div class="form-group mb-4">
+              <label for="formGroupExampleInput2">Wypożyczona książka</label><br>
+              <select id="book-select" name="book_id">  
+                <option value="">Rozwiń listę</option>
+                {% for book in book_list %}
+                <option value="{{book['_id']}}">{{book['title']}} {{book['publish_year']}} - {{book['author_first_name']}} {{book['author_second_name']}}</option>
+                {% endfor %}
+               </select>
+            </div>
+            
+
+            <div class="form-group mb-4">
+              <label for="formGroupExampleInput2">Data wypożyczenia</label>
+              <input type="date" class="form-control" id="formGroupExampleInput4" name="borrowing_date_start" required/>
+            </div>
+
+            <div class="form-group">
+              <label for="formGroupExampleInput2">Data oddania</label>
+              <input type="date" class="form-control" id="formGroupExampleInput4" name="borrowing_date_end"/>
+            </div>
+            <button type="submit" class="btn btn-success my-5 py-2 px-4">Utwórz wpis</button>
+            <a href="/dashboard" class="btn btn-danger my-5 py-2 px-4">Powrót</a>
+          </form>
+          </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  {% endblock %}
