@@ -3,11 +3,11 @@
 
 {% block content %}
 
-  {% if edit_book_confirmation %}
+  {% if edit_reader_confirmation %}
   <div class="alert alert-success text-center" role="alert">
     <div class="row justify-content-end">
       <div class="col-4 d-flex justify-content-center">
-        <p class="m-0">{{edit_book_confirmation}}</p>
+        <p class="m-0">{{edit_reader_confirmation}}</p>
       </div>
       <div class="col-4 d-flex justify-content-end">
         <button type="button" class="btn-close ms-auto" aria-label="Close"></button>
@@ -16,14 +16,14 @@
   </div>
   {% endif %}
   
-  <section class="new-book py-5">
+  <section class="form-items py-5">
     <div class="container d-flex flex-column align-items-center text-center">
-      <h2 class="mb-4">Edycja cztelnika - Numer: {{reader['card_number']}}</h2>
+      <h2 class="mb-4">Edycja cztelnika - Numer karty {{reader['card_number']}}</h2>
         <form method="post">
 
             <div class="form-group mb-4">
               <label for="formGroupExampleInput2">Imie czytelnika</label>
-              <input type="text" class="form-control" id="formGroupExampleInput3" name="author_first_name" value="{{reader['reader_first_name']}}" required/>
+              <input type="text" class="form-control" id="formGroupExampleInput3" name="reader_first_name" value="{{reader['reader_first_name']}}" required/>
             </div>
 
             <div class="form-group mb-4">
@@ -36,7 +36,7 @@
               <input type="date" class="form-control" id="formGroupExampleInput4" name="born_date" value="{{reader['born_date']}}" required/>
             </div>
 
-            <button type="submit" class="btn btn-success my-5 py-2 px-4">Aktualizuj dane książki</button>
+            <button type="submit" class="btn btn-success my-5 py-2 px-4">Aktualizuj dane czytelnika</button>
             <a href="/dashboard/reader_list" class="btn btn-danger my-5 py-2 px-4">Powrót</a>
           </form>
           </div>
