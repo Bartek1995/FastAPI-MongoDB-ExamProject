@@ -74,3 +74,25 @@ class DatabaseManager:
                 return self.readers_collection.find(collection_of_arguments_to_search_in_db)
                 
                 
+    def get_borrowing_book_list_with_modified_data_fields(self):
+        borrowing_book_list = self.borrowing_books_collection.find()
+        borrowing_book_list = list(borrowing_book_list)
+        
+        for element in borrowing_book_list:
+            element['borrowing_date_start'] = element['borrowing_date_start'].date()
+            if element['borrowing_date_end'] != None:
+                element['borrowing_date_end'] = element['borrowing_date_end'].date()
+            
+        return borrowing_book_list
+        
+    def generate_card_number(self):   
+        
+        card_number = 1
+        
+        reader_list = self.readers_collection.find()
+        
+        for element in reader_list:
+            if element["card_number"] > card_number:
+                card_number = element["card_number"]
+                
+        return card_number + 1        
