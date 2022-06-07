@@ -31,10 +31,10 @@
 
             <div class="form-group mb-4">
               <label for="formGroupExampleInput2">Wybór czytelnika</label><br>
-              <select id="reader-select" name="card_number">  
+              <select id="reader-select" name="reader_id">  
                 <option value="">Rozwiń listę</option>
                 {% for reader in reader_list %}
-                <option value="{{reader['card_number']}}">{{reader['reader_first_name']}} {{reader['reader_second_name']}}</option>
+                <option value="{{reader['_id']}}">{{reader['reader_first_name']}} {{reader['reader_second_name']}}</option>
                 {% endfor %}
                </select>
             </div>
