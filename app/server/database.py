@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import datetime
 
 
 class DatabaseManager:
@@ -36,22 +37,22 @@ class DatabaseManager:
         
         return reader
         
-    def get_reader_list_with_modified_data_field(self, existing_reader_list=None):
+    def modify_data_fields_in_collection(self, existing_collection):
         """
-        Get reader list and modify with modified born_date format from datetime to date.\n 
-        You can pass existing reader list as optional argument to modify that list.
+        Transform format from datetime to date in all datatime fields in passed collection.\n 
+        You have to pass existing object of database collection as argument.
         """
-        reader_list = self.readers_collection.find()
         
-        if existing_reader_list != None:
-            reader_list = existing_reader_list
         
-        reader_list = list(reader_list)
+        if existing_collection != None:
+            existing_collection = list(existing_collection)
         
-        for element in reader_list:
-            element['born_date'] = element['born_date'].date()
-            
-        return reader_list
+        for element in existing_collection:
+            for key, value in element.items():
+                if isinstance(value, datetime.datetime):
+                    element[key] = element[key].date()
+                                
+        return existing_collection
     
     
     def get_database_collection_by_arguments(self, name_of_collection, **kwargs):
@@ -72,18 +73,10 @@ class DatabaseManager:
             
             case "reader":
                 return self.readers_collection.find(collection_of_arguments_to_search_in_db)
-                
-                
-    def get_borrowing_book_list_with_modified_data_fields(self):
-        borrowing_book_list = self.borrowing_books_collection.find()
-        borrowing_book_list = list(borrowing_book_list)
-        
-        for element in borrowing_book_list:
-            element['borrowing_date_start'] = element['borrowing_date_start'].date()
-            if element['borrowing_date_end'] != None:
-                element['borrowing_date_end'] = element['borrowing_date_end'].date()
             
-        return borrowing_book_list
+            case "borrowing_books":
+                return self.borrowing_books_collection.find(collection_of_arguments_to_search_in_db)
+                
         
     def generate_card_number(self):   
         
