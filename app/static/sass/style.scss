@@ -1,36 +1,120 @@
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 .bg-shadow {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.55);
-    z-index: -5;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: -5;
+}
+
+.hide {
+  display: none;
 }
 
 header {
-    position: relative;
-    height: 100vh;
-    background-position: center;
-    background-size: cover;
-    z-index: 5;
+  position: relative;
+  height: 100vh;
+  background-position: center;
+  background-size: cover;
+  z-index: 5;
 
+  h2 {
+    color: white;
+    text-transform: uppercase;
+    font-size: 40px;
+  }
 
-    h2 {
-        color: white;
-        text-transform: uppercase;
-        font-size: 40px;
+  form {
+    font-size: 20px;
+  }
+}
+
+.form-items {
+  .form-group {
+    // width: 400px;
+  }
+
+  .select2 {
+    width: 300px !important;
+  }
+}
+
+.info-boxes {
+  .information-box {
+    .fa-book,
+    .fa-people-group,
+    .fa-hand-holding {
+      font-size: 30px;
     }
 
-    form {
-        font-size: 20px;
+    .fa-plus {
+      font-size: 20px;
     }
+    p,
+    span {
+      font-size: 25px;
+    }
+
+    span {
+      font-weight: bold;
+    }
+  }
+}
+
+.search {
+  .accordion-header {
+    button {
+      font-weight: bold;
+    }
+  }
+}
+
+.book_list {
+  table {
+    a {
+      color: black;
+    }
+
+    button {
+      background-color: transparent;
+      border: none;
+    }
+
+    .fa-pen-to-square:hover {
+      color: gold;
+    }
+
+    .fa-trash-can:hover {
+      color: red;
+    }
+    .fa-circle-info:hover {
+      color: rgb(159, 161, 167);
+    }
+    .fa-check{
+      color: rgb(25, 182, 25);
+    }
+    .fa-xmark {
+      color: red;
+    }
+
+    i {
+      font-size: 20px;
+    }
+  }
+}
+.modal {
+  .modal-body {
+    span {
+      font-weight: bold;
+    }
+  }
 }
