@@ -1,9 +1,8 @@
 
-import re
 import uvicorn
 from pathlib import Path
 from datetime import date
-from datetime import datetime
+from datetime import datetime as datetime_func
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Form, Request
 from fastapi.staticfiles import StaticFiles
@@ -38,11 +37,11 @@ templates = Jinja2Templates(directory=templates_root_absolute)
 
 def change_date_format(date_to_modify):
     temp_date = date_to_modify
-    temp_time = datetime.min.time()
-    
-    return datetime.combine(temp_date, temp_time)
-    
-    
+    temp_time = datetime_func.min.time()
+
+    return datetime_func.combine(temp_date, temp_time)
+
+
 @app.post('/register', status_code=201)
 def register(auth_details: AuthDetails):
     if database_manager.administrators_collection.find_one({'username': auth_details.username}) != None:
@@ -102,8 +101,10 @@ def new_reader(request: Request):
 @app.get("/dashboard/reader_list", response_class=HTMLResponse)
 def reader_list(request: Request):
 
-    reader_list = database_manager.get_reader_list_with_modified_data_field()
+    reader_list = database_manager.readers_collection.find()
 
+    reader_list = database_manager.modify_data_fields_in_collection(reader_list)
+    
     context = {
         "request": request,
         "reader_list": reader_list,
@@ -114,26 +115,27 @@ def reader_list(request: Request):
 
 @app.post("/dashboard/reader_list", response_class=HTMLResponse)
 def reader_list(request: Request,
-              reader_first_name: Optional[str] = Form(None),
-              reader_second_name: Optional[str] = Form(None),
-              born_date: Optional[date] = Form(None),
-              card_number: Optional[int] = Form(None)
-              ):
+                reader_first_name: Optional[str] = Form(None),
+                reader_second_name: Optional[str] = Form(None),
+                born_date: Optional[date] = Form(None),
+                card_number: Optional[int] = Form(None)
+                ):
 
     if born_date:
         born_date = change_date_format(born_date)
-    
+
     reader_list = database_manager.get_database_collection_by_arguments(
         'reader',
         reader_first_name=reader_first_name,
         reader_second_name=reader_second_name,
         born_date=born_date,
         card_number=card_number)
-    
-    modified_reader_list = database_manager.get_reader_list_with_modified_data_field(reader_list)    
+
+    reader_list = database_manager.modify_data_fields_in_collection(
+        reader_list)
     context = {
-        "request": request, 
-        "reader_list": modified_reader_list,
+        "request": request,
+        "reader_list": reader_list,
     }
 
     return templates.TemplateResponse("reader_list.html", context)
@@ -158,7 +160,7 @@ def new_reader(
             'reader_first_name': reader_first_name,
             'reader_second_name': reader_second_name,
             'born_date': born_date,
-            'card_number': database_manager.readers_collection.find().count() + 1,
+            'card_number': database_manager.generate_card_number(),
         }
     )
     context['new_reader_confirmation'] = "Utworzono nowego czytelnika"
@@ -173,20 +175,20 @@ def edit_reader(id: str, request: Request):
 
 
 @app.post("/dashboard/edit_reader/{id}", response_class=HTMLResponse)
-def edit_reader(id: str, 
-                request: Request, 
-                reader_first_name: str = Form(...), 
-                reader_second_name: str = Form(...), 
+def edit_reader(id: str,
+                request: Request,
+                reader_first_name: str = Form(...),
+                reader_second_name: str = Form(...),
                 born_date: date = Form(...)):
-    
+
     reader = Reader(
-                reader_first_name=reader_first_name,
-                reader_second_name=reader_second_name, 
-                born_date=change_date_format(born_date))
-    
+        reader_first_name=reader_first_name,
+        reader_second_name=reader_second_name,
+        born_date=change_date_format(born_date))
+
     update_reader_data(reader, id)
     reader.born_date = reader.born_date.date()
-    
+
     context = {
         "request": request,
         "reader": reader,
@@ -203,7 +205,12 @@ def new_book(request: Request):
 
 
 @app.post('/dashboard/new_book', response_class=HTMLResponse)
-def new_book(request: Request, title: str = Form(...), publish_year: int = Form(..., min=0, max=2023), author_first_name: str = Form(...), author_second_name: str = Form(...), publishing_house: str = Form(...)):
+def new_book(request: Request,
+             title: str = Form(...),
+             publish_year: int = Form(..., min=0, max=2023),
+             author_first_name: str = Form(...),
+             author_second_name: str = Form(...),
+             publishing_house: str = Form(...)):
 
     context = {
         "request": request,
@@ -250,7 +257,6 @@ def book_list(request: Request,
               publishing_house: Optional[str] = Form(None)
               ):
 
-
     book_list = database_manager.get_database_collection_by_arguments(
         'book',
         title=title,
@@ -258,9 +264,9 @@ def book_list(request: Request,
         author_first_name=author_first_name,
         author_second_name=author_second_name,
         publishing_house=publishing_house)
-    
+
     context = {
-        "request": request, 
+        "request": request,
         "book_list": book_list,
     }
 
@@ -280,36 +286,36 @@ def delete_book(id: str, request: Request):
 
 
 @app.get("/dashboard/delete/{object_type}/{id}", response_class=HTMLResponse)
-def delete_fish(id: str, request: Request, object_type : str):
-    
+def delete_fish(id: str, request: Request, object_type: str):
+
     match object_type:
         case "book":
             result = database_manager.books_collection.delete_one(
-        {'_id': ObjectId(id)})
+                {'_id': ObjectId(id)})
             response = RedirectResponse(url="/dashboard/book_list")
-            
+
         case "reader":
             result = database_manager.readers_collection.delete_one(
-        {'_id': ObjectId(id)})
+                {'_id': ObjectId(id)})
             response = RedirectResponse(url="/dashboard/reader_list")
-            
+
     response.status_code = 302
     return response
 
 
 @app.post("/dashboard/edit_book/{id}", response_class=HTMLResponse)
-def update_book(id: str, 
-                request: Request, 
-                title: str = Form(...), 
-                publish_year: int = Form(..., min=0, max=2023), 
-                author_first_name: str = Form(...), 
-                author_second_name: str = Form(...), 
+def update_book(id: str,
+                request: Request,
+                title: str = Form(...),
+                publish_year: int = Form(..., min=0, max=2023),
+                author_first_name: str = Form(...),
+                author_second_name: str = Form(...),
                 publishing_house: str = Form(...)):
 
-    book = Book(title=title, 
-                publish_year=publish_year, 
+    book = Book(title=title,
+                publish_year=publish_year,
                 author_first_name=author_first_name,
-                author_second_name=author_second_name, 
+                author_second_name=author_second_name,
                 publishing_house=publishing_house)
 
     context = {
@@ -321,6 +327,135 @@ def update_book(id: str,
     context['edit_book_confirmation'] = "Dane książki zostały zmodyfikowane"
 
     return templates.TemplateResponse("edit_book.html", context)
+
+
+@app.get("/dashboard/new_book_borrowing", response_class=HTMLResponse)
+def new_book_borrowing(request: Request):
+
+    reader_list = database_manager.readers_collection.find()
+    book_list = database_manager.books_collection.find()
+
+    context = {
+        "request": request,
+        "reader_list": reader_list,
+        "book_list": book_list,
+    }
+
+    return templates.TemplateResponse("new_book_borrowing.html", context)
+
+
+@app.get("/dashboard/borrowing_book_list", response_class=HTMLResponse)
+def borrowing_book_list(request: Request):
+
+    borrowing_book_list = database_manager.borrowing_books_collection.find()
+    
+    borrowing_book_list = database_manager.modify_data_fields_in_collection(borrowing_book_list)
+
+    context = {
+        "request": request,
+        "borrowing_book_list": borrowing_book_list,
+    }
+
+    return templates.TemplateResponse("borrowing_book_list.html", context)
+
+
+@app.post("/dashboard/borrowing_book_list", response_class=HTMLResponse)
+def borrowing_book_list(request: Request,
+                        reader_full_name: Optional[str] = Form(None),
+                        card_number: Optional[int] = Form(None),
+                        book_title: Optional[str] = Form(None),
+                        borrowing_date_start: Optional[date] = Form(None),
+                        borrowing_date_end: Optional[date] = Form(None),
+                        is_finished: Optional[bool] = Form(None),
+                        modified_borrowing_date_end:Optional[date] = Form(None),
+                        borrowing_book_id:Optional[str] = Form(None)):
+    
+    
+    if modified_borrowing_date_end:
+       
+        modified_borrowing_date_end = change_date_format(modified_borrowing_date_end) 
+        print("date changed")
+        borrowing_book_item = database_manager.borrowing_books_collection.update_one(
+        {'_id': ObjectId(borrowing_book_id)},
+        {"$set":
+            {
+                'borrowing_date_end': modified_borrowing_date_end,
+                'is_finished': True,
+            }
+         }
+    )
+        print("update")
+
+    if borrowing_date_start != None:
+        borrowing_date_start = change_date_format(borrowing_date_start)
+    elif borrowing_date_end != None:
+        borrowing_date_end = change_date_format(borrowing_date_end)
+
+    borrowing_book_list = database_manager.get_database_collection_by_arguments(
+        "borrowing_books",
+        reader_full_name=reader_full_name,
+        card_number=card_number,
+        book_title=book_title,
+        borrowing_date_start=borrowing_date_start,
+        borrowing_date_end=borrowing_date_end,
+        is_finished=is_finished
+    )
+
+    borrowing_book_list = database_manager.modify_data_fields_in_collection(borrowing_book_list)
+    
+    context = {
+        "request": request,
+        "borrowing_book_list": borrowing_book_list,
+    }
+
+    return templates.TemplateResponse("borrowing_book_list.html", context)
+
+
+@app.post('/dashboard/new_book_borrowing', response_class=HTMLResponse)
+def new_book_borrowing(request: Request,
+                       reader_id: str = Form(...),
+                       book_id: str = Form(...),
+                       borrowing_date_start: date = Form(...),
+                       borrowing_date_end: Optional[date] = Form(None),
+                       ):
+    reader_list = database_manager.readers_collection.find()
+    book_list = database_manager.books_collection.find()
+
+    context = {
+        "request": request,
+        "reader_list": reader_list,
+        "book_list": book_list,
+    }
+
+    is_finished = False
+
+    if borrowing_date_end != None:
+        if borrowing_date_end < borrowing_date_start:
+            context['new_borrowing_error'] = "Błędnie wprowadzona data, data oddania powinna być po dacie wypożyczenia"
+
+            return templates.TemplateResponse("new_book_borrowing.html", context)
+        else:
+            is_finished = True
+            borrowing_date_end = change_date_format(borrowing_date_end)
+
+    book = database_manager.get_book_by_id(book_id)
+    reader = database_manager.readers_collection.find_one(
+        {'_id': ObjectId(reader_id)})
+    borrowing_date_start = change_date_format(borrowing_date_start)
+    database_manager.borrowing_books_collection.insert_one(
+        {'reader_id': reader_id,
+         'card_number': reader["card_number"],
+         'book_id': book_id,
+         'book_title': book['title'],
+         'reader_full_name': "{} {}".format(reader['reader_first_name'], reader['reader_second_name']),
+         'borrowing_date_start': borrowing_date_start,
+         'borrowing_date_end': borrowing_date_end,
+         'is_finished': is_finished
+         }
+    )
+    context['new_borrowing_confirmation'] = "Dodano wpis o wypożyczeniu"
+
+    return templates.TemplateResponse("new_book_borrowing.html", context)
 
 
 @app.put("/update_book", status_code=202)
@@ -335,10 +470,10 @@ def update_book_data(book: Book, id: str):
                 'publish_year': book.publish_year,
                 'publishing_house': book.publishing_house,
             }
-        }
+         }
     )
-    
-    
+
+
 @app.put("/update_reader", status_code=202)
 def update_reader_data(reader: Reader, id: str):
     result = database_manager.readers_collection.update_one(
@@ -349,5 +484,5 @@ def update_reader_data(reader: Reader, id: str):
                 'reader_second_name': reader.reader_second_name,
                 'born_date': reader.born_date,
             }
-        }
+         }
     )
