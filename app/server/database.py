@@ -1,10 +1,11 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-import datetime
+from datetime import datetime, timedelta
+import os
 
 
 class DatabaseManager:
-    client = MongoClient('mongodb://localhost:27017/')
+    client = MongoClient('mongodb+srv://Bartek1995:{}@libary-app.1jnj8ab.mongodb.net/?retryWrites=true&w=majority'.format(os.environ.get('DBPASSWORD')))
     libary_db = client['libary']
     
     books_collection = libary_db['books']
@@ -49,7 +50,7 @@ class DatabaseManager:
         
         for element in existing_collection:
             for key, value in element.items():
-                if isinstance(value, datetime.datetime):
+                if isinstance(value, datetime):
                     element[key] = element[key].date()
                                 
         return existing_collection
@@ -88,4 +89,28 @@ class DatabaseManager:
             if element["card_number"] > card_number:
                 card_number = element["card_number"]
                 
-        return card_number + 1        
+        return card_number + 1     
+    
+    def get_values_and_days_to_statistics_chart(self, start_date, end_date):
+           
+        values = []
+        days = []
+        
+        
+        date_format = "%Y-%m-%d"
+        substract_date = datetime.strptime(str(start_date), date_format)
+        end_date = datetime.strptime(str(end_date), date_format)
+        delta = end_date - substract_date
+
+        
+        for i in range(delta.days + 1):
+            
+            day = substract_date + timedelta(days=i)
+            from main import change_date_format
+            day = change_date_format(day)
+            amount_of_borrowed_books = self.borrowing_books_collection.find({"borrowing_date_start" : day}).count()
+            values.append(amount_of_borrowed_books)
+            days.append(str(day.date()))
+            
+        return {'values' : values,
+                'days' : days}
