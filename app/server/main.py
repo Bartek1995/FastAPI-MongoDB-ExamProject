@@ -1,7 +1,7 @@
 
 import uvicorn
 from pathlib import Path
-from datetime import date
+from datetime import date, timedelta
 from datetime import datetime as datetime_func
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Form, Request
@@ -374,17 +374,15 @@ def borrowing_book_list(request: Request,
     if modified_borrowing_date_end:
        
         modified_borrowing_date_end = change_date_format(modified_borrowing_date_end) 
-        print("date changed")
+
         borrowing_book_item = database_manager.borrowing_books_collection.update_one(
         {'_id': ObjectId(borrowing_book_id)},
         {"$set":
             {
                 'borrowing_date_end': modified_borrowing_date_end,
                 'is_finished': True,
-            }
-         }
-    )
-        print("update")
+            }})
+
 
     if borrowing_date_start != None:
         borrowing_date_start = change_date_format(borrowing_date_start)
@@ -457,6 +455,43 @@ def new_book_borrowing(request: Request,
 
     return templates.TemplateResponse("new_book_borrowing.html", context)
 
+
+@app.get("/dashboard/statistics", response_class=HTMLResponse)
+def statistics(request: Request):
+    
+    today = date.today()
+    modified_days = timedelta(10)
+    
+    
+    start_date = today - modified_days
+        
+
+    context = {
+        "request" : request,
+    }
+    
+    context.update(database_manager.get_values_and_days_to_statistics_chart(start_date,today))
+        
+
+    return templates.TemplateResponse("statistics.html", context)
+
+
+@app.post("/dashboard/statistics", response_class=HTMLResponse)
+def statistics(request: Request,
+               borrowing_date_start: Optional[date] = Form(None),
+               borrowing_date_end: Optional[date] = Form(None)):
+    
+    context = {
+        "request": request,
+    }
+    
+    if borrowing_date_end < borrowing_date_start:
+        context['date_error'] = "Nieprawidłowo wprowadzona data, popraw datę aby wyświetlić wykres głowny"
+    
+    
+    context.update(database_manager.get_values_and_days_to_statistics_chart(borrowing_date_start,borrowing_date_end))
+
+    return templates.TemplateResponse("statistics.html", context)
 
 @app.put("/update_book", status_code=202)
 def update_book_data(book: Book, id: str):
