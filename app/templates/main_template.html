@@ -11,7 +11,8 @@
     <script src="https://kit.fontawesome.com/cc1b9b8a5d.js" crossorigin="anonymous"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <script>
       $(function(){
@@ -33,11 +34,17 @@
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/dashboard">Panel główny</a>
+            <a class="nav-link active" href="/dashboard">Panel główny</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard/db_import_export">Import/Export Bazy danych</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/dashboard/statistics">Statystyki biblioteki</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Informacje o bibliotece
+              Przegląd dostępnych baz
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <li><a class="dropdown-item" href="/dashboard/book_list">Baza książek</a></li>
