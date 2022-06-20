@@ -1,8 +1,7 @@
-from datetime import  datetime
-from fastapi import Depends
-from pydantic import BaseModel, EmailStr, Field
-from fastapi.responses import HTMLResponse
-from starlette.responses import RedirectResponse, Response
+from datetime import datetime
+
+from pydantic import BaseModel, Field
+
 
 class Admin(BaseModel):
     username: str
@@ -24,6 +23,7 @@ class Reader(BaseModel):
             }
         }
 
+
 class Book(BaseModel):
     title: str = Field(...)
     publish_year: int = Field(...)
@@ -40,6 +40,3 @@ class Book(BaseModel):
                 "book_genre": "Fantasy",
             }
         }
-
-
-
