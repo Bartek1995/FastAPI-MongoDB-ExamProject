@@ -171,23 +171,21 @@ class DatabaseManager:
             match collection_name:
 
                 case "borrowing_books":
-                    subtract_hours = timedelta(hours=2)
                     borrowing_date_start_ts = jsonObj['borrowing_date_start']['$date']
-                    borrowing_date_start_dt_object = datetime.fromtimestamp(borrowing_date_start_ts / 1000)
-                    jsonObj['borrowing_date_start'] = borrowing_date_start_dt_object - subtract_hours
+                    borrowing_date_start_ts_date = datetime.strptime(borrowing_date_start_ts, "%Y-%m-%dT%H:%M:%SZ")
+                    jsonObj['borrowing_date_start'] = borrowing_date_start_ts_date
 
                     if jsonObj['borrowing_date_end'] is not None:
                         borrowing_date_end_ts = jsonObj['borrowing_date_end']['$date']
-                        borrowing_date_end_dt_object = datetime.fromtimestamp(borrowing_date_end_ts / 1000)
-                        jsonObj['borrowing_date_end'] = borrowing_date_end_dt_object - subtract_hours
+                        borrowing_date_end_ts_date = datetime.strptime(borrowing_date_end_ts, "%Y-%m-%dT%H:%M:%SZ")
+                        jsonObj['borrowing_date_end'] = borrowing_date_end_ts_date
 
                     collection = self.borrowing_books_collection
 
                 case "readers":
-                    subtract_hours = timedelta(hours=2)
                     born_date_start_ts = jsonObj['born_date']['$date']
-                    born_date_start_dt_object = datetime.fromtimestamp(born_date_start_ts / 1000)
-                    jsonObj['born_date'] = born_date_start_dt_object - subtract_hours
+                    borrowing_date_end_ts_date = datetime.strptime(born_date_start_ts, "%Y-%m-%dT%H:%M:%SZ")
+                    jsonObj['born_date'] = borrowing_date_end_ts_date
                     collection = self.readers_collection
 
                 case "books":
