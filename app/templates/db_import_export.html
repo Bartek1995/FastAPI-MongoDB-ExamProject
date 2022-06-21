@@ -43,22 +43,33 @@
                 <form method="post" enctype="multipart/form-data">
 
                     <div class="mb-3">
-                        <label for="formFile" class="form-label">Kolekcja - baza wypożyczeń - <span>borrowing_book_collection.json</span></label>
-                        <input class="form-control" type="file" id="formFile" name="borrowing_book_collection">
+                        <label for="formFile_first" class="form-label">Kolekcja - baza wypożyczeń - <span>borrowing_book_collection.json</span></label>
+                        <input class="form-control" type="file" id="formFile_first" name="borrowing_book_collection">
                     </div>
 
                     <div class="mb-3">
-                        <label for="formFile" class="form-label">Kolekcja - baza książek - <span>books_collection.json</span></label>
-                        <input class="form-control" type="file" id="formFile" name="book_collection">
+                        <label for="formFile_second" class="form-label">Kolekcja - baza książek - <span>books_collection.json</span></label>
+                        <input class="form-control" type="file" id="formFile_second" name="book_collection">
                     </div>
 
                     <div class="mb-3">
-                        <label for="formFile" class="form-label">Kolekcja - baza czytelników - <span>readers_collection.json</span></label>
-                        <input class="form-control" type="file" id="formFile" name="readers_collection">
+                        <label for="formFile_third" class="form-label">Kolekcja - baza czytelników - <span>readers_collection.json</span></label>
+                        <input class="form-control" type="file" id="formFile_third" name="readers_collection">
                     </div>
 
-                    <input type="hidden" name="type_of_action" value="import">
-                    <button type="submit" class="btn btn-outline-secondary mt-4 mb-2">Importuj</button>
+                    <div class="row">
+                        <div class="col-12 col-lg-8">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">Hasło do bazy<i class="fa-solid fa-lock ms-2"></i></span>
+                                <input type="password" class="form-control" id="db_password" aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <input type="hidden" name="type_of_action" value="import">
+                            <button type="submit" class="btn btn-outline-secondary mt-4 mt-lg-1 mb-2">Importuj</button>
+                        </div>
+                    </div>
+
                 </form>
 
                 {% if import_success %}
