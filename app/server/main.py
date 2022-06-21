@@ -76,7 +76,7 @@ def login(request: Request, username: str = Form(...), password: str = Form(...)
     else:
         response = RedirectResponse(url="/dashboard")
         response.status_code = 302
-        token = auth_handler.encode_token(user['username'])
+        auth_handler.encode_token(user['username'])
         return response
 
 
@@ -102,7 +102,6 @@ def reader_list(request: Request):
     reader_list = database_manager.readers_collection.find()
     # print(reader_list.__collname)
     print(reader_list.collection['name'])
-
 
     reader_list = database_manager.modify_data_fields_in_collection(reader_list)
 
@@ -278,15 +277,15 @@ def delete_book(id: str, request: Request):
 
 
 @app.get("/dashboard/delete/{object_type}/{id}", response_class=HTMLResponse)
-def delete_fish(id: str, request: Request, object_type: str):
+def delete_fish(id: str, object_type: str):
     match object_type:
         case "book":
-            result = database_manager.books_collection.delete_one(
+            database_manager.books_collection.delete_one(
                 {'_id': ObjectId(id)})
             response = RedirectResponse(url="/dashboard/book_list")
 
         case "reader":
-            result = database_manager.readers_collection.delete_one(
+            database_manager.readers_collection.delete_one(
                 {'_id': ObjectId(id)})
             response = RedirectResponse(url="/dashboard/reader_list")
 
@@ -537,7 +536,7 @@ def db_import_export(request: Request,
 
 @app.put("/update_book", status_code=202)
 def update_book_data(book: Book, id: str):
-    result = database_manager.books_collection.update_one(
+    database_manager.books_collection.update_one(
         {'_id': ObjectId(id)},
         {"$set":
             {
@@ -553,7 +552,7 @@ def update_book_data(book: Book, id: str):
 
 @app.put("/update_reader", status_code=202)
 def update_reader_data(reader: Reader, id: str):
-    result = database_manager.readers_collection.update_one(
+    database_manager.readers_collection.update_one(
         {'_id': ObjectId(id)},
         {"$set":
             {
