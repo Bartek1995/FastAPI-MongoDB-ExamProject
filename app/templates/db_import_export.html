@@ -61,7 +61,7 @@
                         <div class="col-12 col-lg-8">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon1">Hasło do bazy<i class="fa-solid fa-lock ms-2"></i></span>
-                                <input type="password" class="form-control" id="db_password" aria-describedby="basic-addon1">
+                                <input type="password" class="form-control" id="db_password" aria-describedby="basic-addon1" name="db_password_input">
                             </div>
                         </div>
                         <div class="col">
@@ -76,8 +76,8 @@
                 <p class="succes-text mb-0">{{ import_success }}</p>
                 {% endif %}
 
-                {% if import_error %}
-                <p class="error-text mb-0">{{ import_error }}</p>
+                {% if import_error or password_error %}
+                <p class="error-text mb-0">{{ import_error }} {{ password_error }}</p>
                 {% endif %}
             </div>
         </div>

@@ -1,7 +1,7 @@
 from datetime import date
 from datetime import datetime as datetime_func
 from typing import Optional
-
+import os
 import uvicorn
 from fastapi import FastAPI, HTTPException, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse
@@ -486,14 +486,16 @@ def db_import_export(request: Request,
                      borrowing_book_collection: Optional[UploadFile] = Form(None),
                      book_collection: Optional[UploadFile] = Form(None),
                      readers_collection: Optional[UploadFile] = Form(None),
-                     type_of_action: Optional[str] = Form(None)):
+                     type_of_action: Optional[str] = Form(None),
+                     db_password_input: Optional[str] = Form(None)):
     context = {
         "request": request,
     }
 
-    borrowing_book_collection_json_file_valid = None
-    books_collection_json_file_valid = None
-    readers_collection_json_file_valid = None
+    borrowing_book_collection_json_file_is_valid = None
+    books_collection_json_file_is_valid = None
+    readers_collection_json_file_is_valid = None
+    password_valid = False
 
     match type_of_action:
 
@@ -502,34 +504,41 @@ def db_import_export(request: Request,
             context['export_success'] = "Pomyślnie eksportowano wybrane kolekcje"
 
         case "import":
+
+            if str(db_password_input) == str(os.environ.get('DBPASSWORD')):
+                password_valid = True
+
             if borrowing_book_collection.filename != "":
                 if borrowing_book_collection.filename == "borrowing_book_collection.json":
-                    borrowing_book_collection_json_file_valid = True
+                    borrowing_book_collection_json_file_is_valid = True
                     database_manager.import_collection(borrowing_book_collection, "borrowing_books")
                 else:
-                    borrowing_book_collection_json_file_valid = False
+                    borrowing_book_collection_json_file_is_valid = False
 
             elif readers_collection.filename != "":
                 if readers_collection.filename == "readers_collection.json":
-                    readers_collection_json_file_valid = True
+                    readers_collection_json_file_is_valid = True
                     database_manager.import_collection(readers_collection, "readers")
                 else:
-                    readers_collection_json_file_valid = False
+                    readers_collection_json_file_is_valid = False
 
             elif book_collection.filename != "":
                 if book_collection.filename == "books_collection.json":
-                    books_collection_json_file_valid = True
+                    books_collection_json_file_is_valid = True
                     database_manager.import_collection(book_collection, "books")
                 else:
-                    readers_collection_json_file_valid = False
+                    books_collection_json_file_is_valid = False
 
-            if (borrowing_book_collection_json_file_valid is not True or None) and (
-                    books_collection_json_file_valid is not True or None) and (
-                    readers_collection_json_file_valid is not True or None):
+            if (borrowing_book_collection_json_file_is_valid is not True or None) and (
+                    books_collection_json_file_is_valid is not True or None) and (
+                    readers_collection_json_file_is_valid is not True or None) and password_valid:
                 context['import_error'] = "Błąd ładowania plików, sprawdź poprawność załadowanych plików."
             else:
-                context[
-                    'import_success'] = "Pliki JSON zostały wczytane do bazy danych. Baza została uzupełniona o różnice."
+                if password_valid:
+                    context[
+                        'import_success'] = "Pliki JSON zostały wczytane do bazy danych. Baza została uzupełniona o różnice."
+                else:
+                    context['password_error'] = "Nieprawidłowe hasło do bazy danych"
 
     return templates.TemplateResponse("db_import_export.html", context)
 
