@@ -14,19 +14,18 @@
             <div class="col-12 col-md import-export-item export border text-center py-4 d-flex flex-column align-items-center mx-md-3 mb-4">
                 <h4>Export bazy danych</h4>
                 <i class="fa-solid fa-file-export pb-3"></i>
-                <p>Wybierz kolekcje z bazy danych, którą chcesz eksportować, zostaną stworzone pliki JSON do późniejszego załadowania.</p>
+                <p>Wybierz kolekcje z bazy danych, którą chcesz eksportować, zostanie pobrany wybrany plik JSON do późniejszego załadowania.</p>
                 
                 <form method="post">
 
                     <select class="form-select" name="collection_select">
-                        <option selected value="all">Wszystkie kolekcje</option>
                         <option value="readers_collection">Czytelnicy</option>
                         <option value="books_collection">Książki</option>
                         <option value="borrowing_book_collection">Wypożyczenia</option>
                     </select>
 
                     <input type="hidden" name="type_of_action" value="export">
-                    <button type="submit" class="btn btn-outline-secondary mt-4 mb-2">Eksportuj</button>
+                    <button type="submit" class="btn btn-outline-secondary mt-4 mb-2">Pobierz</button>
                 </form>
 
                 {% if export_success %}

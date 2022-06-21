@@ -1,10 +1,9 @@
 from datetime import date
 from datetime import datetime as datetime_func
 from typing import Optional
-import os
 import uvicorn
 from fastapi import FastAPI, HTTPException, Form, Request, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
@@ -501,7 +500,8 @@ def db_import_export(request: Request,
 
         case "export":
             database_manager.export_collection_as_json(collection_select)
-            context['export_success'] = "Pomyślnie eksportowano wybrane kolekcje"
+            filename = f"/{collection_select}.json"
+            return FileResponse(path=str(db_import_export_root_absolute) + filename, media_type='text/json', filename=collection_select+".json")
 
         case "import":
 
