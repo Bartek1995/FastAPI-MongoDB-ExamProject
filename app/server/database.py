@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
+from operator import itemgetter
 
 from bson.json_util import dumps
 from bson.objectid import ObjectId
@@ -119,6 +120,21 @@ class DatabaseManager:
 
         return {'values': values,
                 'days': days}
+
+
+    def get_readers_and_amount_of_books_to_statistics_chart(self):
+        reader_name = []
+        amount_of_borrowed_books = []
+
+        temp_reader_list = list(self.readers_collection.find({'book_borrowing_counter': {"$gt": 0}}))
+        newlist = sorted(temp_reader_list, reverse=True, key=itemgetter('book_borrowing_counter'))
+
+        for reader in newlist[:5]:
+            full_name = f"{reader['reader_first_name']} {reader['reader_second_name']}"
+            reader_name.append(full_name)
+            amount_of_borrowed_books.append(reader['book_borrowing_counter'])
+        return {'reader_name': reader_name,
+                'amount_of_borrowed_books': amount_of_borrowed_books }
 
     def export_collection_as_json(self, collection_name):
 

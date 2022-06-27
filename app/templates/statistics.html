@@ -44,7 +44,7 @@
                                 <span class="input-group-text">Koniec zakresu</span>
                             </div>
 
-                            </div>
+                        </div>
                             <div class="col-12 d-flex justify-content-center">
                                 <button type="submit" class="btn btn-outline-secondary mb-3 ">Wyszukaj</button>
                             </div>
@@ -59,15 +59,27 @@
 
     {% if not date_error %}
     <section class="main-chart py-4">
-        <div class="" id="chart"></div>
+        <div class="" id="main-chart"></div>
     </section>    
     {% endif %}
+
+    <section class="sub-charts py-5">
+        <div class="row">
+
+            <div class="col-6" id="top-readers"></div>
+            <div class="col-6" id="top-books"></div>
+
+        </div>
+    </section>
 </div>
 
 
 <script>
     const borrowing_books_values = JSON.parse('{{ values | tojson}}');
     const borrowing_books_days = JSON.parse('{{ days | tojson}}');
+    const top_readers_reader_name = JSON.parse('{{ reader_name | tojson}}');
+    const top_readers_amount_of_borrowed_books = JSON.parse('{{ amount_of_borrowed_books | tojson}}');
+
 
 </script>
 

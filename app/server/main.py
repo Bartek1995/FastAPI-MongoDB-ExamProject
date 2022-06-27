@@ -158,6 +158,7 @@ def new_reader(
             'reader_second_name': reader_second_name,
             'born_date': born_date,
             'card_number': database_manager.generate_card_number(),
+            'book_borrowing_counter': 0
         }
     )
     context['new_reader_confirmation'] = "Utworzono nowego czytelnika"
@@ -419,8 +420,18 @@ def new_book_borrowing(request: Request,
             borrowing_date_end = change_date_format(borrowing_date_end)
 
     book = database_manager.get_book_by_id(book_id)
+
     reader = database_manager.readers_collection.find_one(
         {'_id': ObjectId(reader_id)})
+
+    database_manager.readers_collection.update_one(
+        {'_id': ObjectId(reader_id)},
+        {"$set":
+            {
+                'book_borrowing_counter': reader['book_borrowing_counter'] + 1,
+            }
+        }
+    )
     borrowing_date_start = change_date_format(borrowing_date_start)
     database_manager.borrowing_books_collection.insert_one(
         {'reader_id': reader_id,
@@ -449,6 +460,7 @@ def statistics(request: Request):
         "request": request,
     }
 
+    context.update(database_manager.get_readers_and_amount_of_books_to_statistics_chart())
     context.update(database_manager.get_values_and_days_to_statistics_chart(start_date, today))
 
     return templates.TemplateResponse("statistics.html", context)
