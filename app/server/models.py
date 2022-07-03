@@ -30,6 +30,7 @@ class Book(BaseModel):
     author_first_name: str = Field(...)
     author_second_name: str = Field(...)
     publishing_house: str = Field(...)
+    book_borrowing_counter: int = Field(...)
 
     class Config:
         schema_extra = {
