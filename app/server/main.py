@@ -218,7 +218,8 @@ def new_book(request: Request,
                 'author_first_name': author_first_name,
                 'author_second_name': author_second_name,
                 'publish_year': publish_year,
-                'publishing_house': publishing_house
+                'publishing_house': publishing_house,
+                'book_borrowing_counter': 0
             }
         )
         context['new_book_confirmation'] = "Książka została dodana do bazy danych"
@@ -419,10 +420,11 @@ def new_book_borrowing(request: Request,
             is_finished = True
             borrowing_date_end = change_date_format(borrowing_date_end)
 
-    book = database_manager.get_book_by_id(book_id)
-
     reader = database_manager.readers_collection.find_one(
         {'_id': ObjectId(reader_id)})
+
+    book = database_manager.books_collection.find_one(
+        {'_id': ObjectId(book_id)})
 
     database_manager.readers_collection.update_one(
         {'_id': ObjectId(reader_id)},
@@ -432,6 +434,15 @@ def new_book_borrowing(request: Request,
             }
         }
     )
+    database_manager.books_collection.update_one(
+        {'_id': ObjectId(book_id)},
+        {"$set":
+            {
+                'book_borrowing_counter': book['book_borrowing_counter'] + 1,
+            }
+        }
+    )
+
     borrowing_date_start = change_date_format(borrowing_date_start)
     database_manager.borrowing_books_collection.insert_one(
         {'reader_id': reader_id,
@@ -462,6 +473,8 @@ def statistics(request: Request):
 
     context.update(database_manager.get_readers_and_amount_of_books_to_statistics_chart())
     context.update(database_manager.get_values_and_days_to_statistics_chart(start_date, today))
+    context.update(database_manager.get_most_frequently_borrowed_books())
+    context.update(database_manager.get_percent_of_finished_book_borrowings())
 
     return templates.TemplateResponse("statistics.html", context)
 
