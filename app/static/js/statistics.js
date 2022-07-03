@@ -43,7 +43,7 @@ var topReadersOptions = {
   data: top_readers_amount_of_borrowed_books
 }],
   chart: {
-  height: 300,
+  height: 350,
   type: 'bar',
   events: {
     click: function(chart, w, e) {
@@ -85,8 +85,8 @@ chart.render();
 
 var topBooks = {
   series: [{
-  name: 'Servings',
-  data: [44, 55, 41, 67, 22, 43, 21, 33, 45, 31, 87, 65, 35]
+  name: 'Ilość wypożyczeń',
+  data: top_books_amount
 }],
 chart: {
   height: 350,
@@ -95,7 +95,7 @@ chart: {
 plotOptions: {
   bar: {
     borderRadius: 10,
-    columnWidth: '50%',
+    columnWidth: 50,
   }
 },
 dataLabels: {
@@ -115,11 +115,11 @@ grid: {
 },
 xaxis: {
   labels: {
-    rotate: -45
+    rotate: -45,
+    minHeight: 80,
+    rotateAlways: true,
   },
-  categories: ['Apples', 'Oranges', 'Strawberries', 'Pineapples', 'Mangoes', 'Bananas',
-    'Blackberries', 'Pears', 'Watermelons', 'Cherries', 'Pomegranates', 'Tangerines', 'Papayas'
-  ],
+  categories: top_books_book_titles,
   tickPlacement: 'on'
 },
 fill: {
@@ -140,3 +140,29 @@ fill: {
 var chart = new ApexCharts(document.querySelector("#top-books"), topBooks);
 chart.render();
 
+var borrowingStatistics = {
+  series: borrowing_books_amount_as_percentage,
+  chart: {
+  width: 380,
+  type: 'pie',
+},
+title: {
+text: 'Statystyki wypożyczeń',
+align: 'left'
+},
+legend: {
+  position: 'bottom'
+},
+labels: ['Książki nie oddane', 'Książki oddane'],
+responsive: [{
+  breakpoint: 480,
+  options: {
+    chart: {
+      width: 200
+    },
+  }
+}]
+};
+
+var chart = new ApexCharts(document.querySelector("#borrowing-statistics"), borrowingStatistics);
+chart.render();
