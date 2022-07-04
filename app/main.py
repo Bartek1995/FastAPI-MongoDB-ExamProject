@@ -8,10 +8,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 
-from server.auth import AuthHandler
 from database import *
 from server.models import Book, Reader
 from server.schemas import AuthDetails
+from server.auth import AuthHandler
 
 app = FastAPI()
 auth_handler = AuthHandler()
