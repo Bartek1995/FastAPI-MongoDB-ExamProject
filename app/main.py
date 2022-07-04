@@ -8,24 +8,24 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import RedirectResponse
 
-from auth import AuthHandler
+from server.auth import AuthHandler
 from database import *
-from models import Book, Reader
-from schemas import AuthDetails
+from server.models import Book, Reader
+from server.schemas import AuthDetails
 
 app = FastAPI()
 auth_handler = AuthHandler()
 database_manager = DatabaseManager()
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, debug=True)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True, debug=True)
 
 current_file = Path(__file__)
 current_file_dir = current_file.parent
 project_root = current_file_dir.parent
 project_root_absolute = project_root.resolve()
-static_root_absolute = project_root_absolute / "static"
-templates_root_absolute = project_root_absolute / "templates"
+static_root_absolute = project_root_absolute / "app/static"
+templates_root_absolute = project_root_absolute / "app/templates"
 
 # static files settings
 app.mount("/static", StaticFiles(directory=static_root_absolute), name='static')
@@ -486,6 +486,10 @@ def statistics(request: Request,
     context = {
         "request": request,
     }
+
+    context.update(database_manager.get_readers_and_amount_of_books_to_statistics_chart())
+    context.update(database_manager.get_most_frequently_borrowed_books())
+    context.update(database_manager.get_percent_of_finished_book_borrowings())
 
     if borrowing_date_end < borrowing_date_start:
         context['date_error'] = "Nieprawidłowo wprowadzona data, popraw datę aby wyświetlić wykres głowny"

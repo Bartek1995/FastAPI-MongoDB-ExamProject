@@ -3,17 +3,19 @@ import os
 from datetime import datetime, timedelta
 from pathlib import Path
 from operator import itemgetter
-
+import sys
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 from pymongo.errors import BulkWriteError
 
+
+sys.path.append("")
 current_file = Path(__file__)
 current_file_dir = current_file.parent
 project_root = current_file_dir.parent
 project_root_absolute = project_root.resolve()
-db_import_export_root_absolute = project_root_absolute / "db_import_export"
+db_import_export_root_absolute = project_root_absolute / "app/db_import_export"
 
 
 class DatabaseManager:
