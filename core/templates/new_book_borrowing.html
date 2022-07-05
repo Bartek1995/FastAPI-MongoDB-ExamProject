@@ -27,11 +27,12 @@
 
     <div class="container d-flex flex-column align-items-center text-center">
       <h2 class="mb-4">Utwórz raport wypożyczenia</h2>
-        <form method="post">
+        <div class="col">
+                    <form method="post">
 
             <div class="form-group mb-4">
               <label for="formGroupExampleInput2">Wybór czytelnika</label><br>
-              <select id="reader-select" name="reader_id">  
+              <select id="reader-select" name="reader_id">
                 <option value="">Rozwiń listę</option>
                 {% for reader in reader_list %}
                 <option value="{{reader['_id']}}">{{reader['reader_first_name']}} {{reader['reader_second_name']}}</option>
@@ -41,14 +42,14 @@
 
             <div class="form-group mb-4">
               <label for="formGroupExampleInput2">Wypożyczona książka</label><br>
-              <select id="book-select" name="book_id">  
+              <select id="book-select" name="book_id">
                 <option value="">Rozwiń listę</option>
                 {% for book in book_list %}
                 <option value="{{book['_id']}}">{{book['title']}} {{book['publish_year']}} - {{book['author_first_name']}} {{book['author_second_name']}}</option>
                 {% endfor %}
                </select>
             </div>
-            
+
 
             <div class="form-group mb-4">
               <label for="formGroupExampleInput2">Data wypożyczenia</label>
@@ -63,10 +64,12 @@
             <button type="submit" class="btn btn-success my-5 py-2 px-4">Utwórz wpis</button>
             <a href="/dashboard" class="btn btn-danger my-5 py-2 px-4">Powrót</a>
           </form>
-          </div>
-      </div>
+        </div>
 
     </div>
+
+
+
   </section>
 
 
