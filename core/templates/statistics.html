@@ -1,0 +1,86 @@
+{% extends "main_template.html" %}
+{% block title %} - Statystyki{% endblock %}
+
+{% block content %}
+
+{% if date_error %}
+<div class="alert alert-danger text-center" role="alert">
+  <div class="row justify-content-end">
+    <div class="col-4 d-flex justify-content-center">
+      <p class="m-0">{{date_error}}</p>
+    </div>
+    <div class="col-4 d-flex justify-content-end">
+      <button type="button" class="btn-close ms-auto" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+{% endif %}
+  
+<h2 class="text-center my-5">Statystyki biblioteki</h2>
+<div class="container">
+
+
+    <div class="row justify-content-center ">
+
+        <div class="col-11 col-sm-8 col-md-7 col-lg-5">
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Wyszukaj po zakresie dat
+                    </button>
+                  </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <form method="post">
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Początek zakresu</span>
+                                <input type="date" aria-label="Początek zakresu" class="form-control" name="borrowing_date_start" required>
+                            </div>
+            
+                            <div class="input-group">
+                                <input type="date" aria-label="Koniec zakresu" class="form-control" name="borrowing_date_end" required>
+                                <span class="input-group-text">Koniec zakresu</span>
+                            </div>
+
+                        </div>
+                            <div class="col-12 d-flex justify-content-center">
+                                <button type="submit" class="btn btn-outline-secondary mb-3 ">Wyszukaj</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        
+
+    {% if not date_error %}
+    <section class="charts py-4">
+        <div class="row">
+            <div class="col-12 col-lg-6" id="main-chart"></div>
+            <div class="col-12 col-lg-6 mb-lg-4" id="top-readers"></div>
+            <div class="col-12 col-lg-6" id="top-books"></div>
+            <div class="col-12 col-lg-6 mb-4 d-flex justify-content-center" id="borrowing-statistics"></div>
+        </div>
+    </section>
+    {% endif %}
+
+
+
+<script>
+    const borrowing_books_values = JSON.parse('{{ values | tojson}}');
+    const borrowing_books_days = JSON.parse('{{ days | tojson}}');
+    const top_readers_reader_name = JSON.parse('{{ reader_name | tojson}}');
+    const top_readers_amount_of_borrowed_books = JSON.parse('{{ amount_of_borrowed_books | tojson}}');
+    const top_books_book_titles = JSON.parse('{{ book_titles | tojson}}');
+    const top_books_amount = JSON.parse('{{ amount | tojson}}');
+    const borrowing_books_amount_as_percentage = JSON.parse('{{ borrowing_books_amount_as_percentage | tojson}}');
+
+
+</script>
+
+<script src="{{ url_for('static', path='/js/statistics.js') }}"></script>
+{% endblock %}

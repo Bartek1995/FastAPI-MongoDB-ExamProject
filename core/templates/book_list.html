@@ -1,0 +1,122 @@
+{% extends "main_template.html" %}
+{% block title %} - Panel główny{% endblock %}
+
+{% block content %}
+
+  
+    <h2 class="text-center my-5">Lista książek</h2>
+
+    <section class="book-search search">
+      <div class="container">
+        <div class="accordion" id="accordionExample">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Wyszukiwanie zaawansowane
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+              <div class="accordion-body px-4 px-md-3">
+                <form method="post">
+                <div class="row justify-content-center align-items-center">
+                  <div class="col-12 col-md-6 col-lg-4 form-item mb-3">
+                    <div class="input-group">
+                      <span class="input-group-text">Tytuł książki</span>
+                      <input type="text" aria-label="Tytuł książki" class="form-control" name="title">
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6 col-lg-4 form-item mb-3">
+                    <div class="input-group">
+                      <span class="input-group-text">Imie autora</span>
+                      <input type="text" aria-label="Imie autora" class="form-control" name="author_first_name">
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6 col-lg-4 form-item mb-3">
+                    <div class="input-group">
+                      <span class="input-group-text">Nazwisko autora</span>
+                      <input type="text" aria-label="Nazwisko autora" class="form-control" name="author_second_name">
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6 col-lg-4 form-item mb-3 m-lg-0">
+                    <div class="input-group">
+                      <span class="input-group-text">Rok wydania</span>
+                      <input type="text" aria-label="Rok wydania" class="form-control" name="publish_year">
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6 col-lg-4 form-item mb-3 m-md-0">
+                    <div class="input-group">
+                      <span class="input-group-text">Wydawnictwo</span>
+                      <input type="text" aria-label="Wydawnictwo" class="form-control" name="publishing_house">
+                    </div>
+                  </div>
+                  <div class="col-2 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-outline-secondary px-4">Wyszukaj</button>
+                  </div>
+                </div>
+                </form>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="book_list py-5">
+    <div class="container d-flex flex-column align-items-center text-center">
+      
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Tytuł książki</th>
+            <th scope="col">Rok wydania</th>
+            <th scope="col">Imie i nazwisko autora</th>
+            <th scope="col">Wydawnictwo</th>
+            <th scope="col">Akcje</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for book in book_list %}
+          <tr>
+            <th scope="row">{{loop.index}}</th>
+            <td>{{book['title']}}</td>
+            <td>{{book['publish_year']}}</td>
+            <td>{{book['author_first_name']}} {{book['author_second_name']}}</td>
+            <td>{{book['publishing_house']}}</td>
+            <td>
+              <a data-bs-toggle="tooltip" title="Modyfikuj"  href="/dashboard/edit_book/{{book['_id']}}"><i class="fa-solid fa-pen-to-square m-1"></i></a>
+              <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal{{book['_id']}}"><i class="fa-solid fa-trash-can m-1"></i></button>
+            </td>
+          </tr>
+          <div class="modal fade" id="exampleModal{{book['_id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Potwierdzenie usunięcia</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                  <p>Czy chcesz usunąć wybraną książkę?</p>  
+                  <p>Tytuł: <span>{{book['title']}}</span></p>
+                  <p>Rok: <span>{{book['publish_year']}}</span></p>
+                  <p>Imie i nazwisko autora: <span>{{book['author_first_name']}} {{book['author_second_name']}}</span></p>
+                  <p>Wydawnictwo: <span>{{book['publishing_house']}}</span></p>
+                </div>
+                
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                  <a href="/dashboard/delete/book/{{book['_id']}}" class="btn btn-danger">Usuń</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  
+
+  {% endblock %}

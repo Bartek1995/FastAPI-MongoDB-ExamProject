@@ -1,0 +1,167 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+.bg-shadow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: -5;
+}
+
+.hide {
+  display: none;
+}
+
+header {
+  position: relative;
+  height: 100vh;
+  background-position: center;
+  background-size: cover;
+  z-index: 5;
+
+  h2 {
+    color: white;
+    text-transform: uppercase;
+    font-size: 40px;
+  }
+
+  form {
+    font-size: 20px;
+  }
+}
+
+.form-items {
+
+  .select2 {
+    width: 300px !important;
+  }
+}
+
+.info-boxes {
+
+  
+  .information-box {
+    box-shadow: 1px 1px 5px grey;
+    transition: transform 0.3s;
+
+    .fa-book,
+    .fa-people-group,
+    .fa-hand-holding {
+      font-size: 30px;
+    }
+
+    .fa-plus {
+      font-size: 20px;
+    }
+    p,
+    span {
+      font-size: 25px;
+    }
+
+    span {
+      font-weight: bold;
+    }
+  }
+  .information-box:hover {
+    transform: scale(1.05);
+  }
+}
+
+.search {
+  .accordion-header {
+    button {
+      font-weight: bold;
+    }
+  }
+}
+
+.book_list {
+  table {
+    a {
+      color: black;
+    }
+
+    button {
+      background-color: transparent;
+      border: none;
+    }
+
+    .fa-pen-to-square:hover {
+      color: gold;
+    }
+
+    .fa-trash-can:hover {
+      color: red;
+    }
+    .fa-circle-info:hover {
+      color: rgb(159, 161, 167);
+    }
+    .fa-check{
+      color: rgb(25, 182, 25);
+    }
+    .fa-xmark {
+      color: red;
+    }
+
+    i {
+      font-size: 20px;
+    }
+    td {
+      white-space: nowrap;
+    }
+  }
+}
+.modal {
+  .modal-body {
+    span {
+      font-weight: bold;
+    }
+  }
+}
+
+
+.import-export {
+
+  .form-select {
+    max-width: 400px;
+  }
+
+  .fa-solid{
+    font-size: 30px;
+  }
+
+  .succes-text {
+    color: green;
+    font-weight: bold;
+  }
+
+  .error-text {
+    color: red;
+    font-weight: bold;
+  }
+
+  .export {
+    height: 320px;
+  }
+}
+
+.import-export-item {
+  transition: transform 0.3s;
+  box-shadow: 1px 1px 5px grey;
+
+  span {
+    font-weight: bold;
+  }
+}
+
+.import-export-item:hover {
+  transform: scale(1.05);
+}

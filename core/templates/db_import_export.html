@@ -1,0 +1,85 @@
+{% extends "main_template.html" %}
+{% block title %} - Import/Export{% endblock %}
+
+{% block content %}
+
+
+
+<h2 class="text-center my-5">Import/Eksport bazy danych</h2>
+<div class="container">
+
+    <section class="import-export">
+        <div class="row m-0">
+    
+            <div class="col-12 col-md import-export-item export border text-center py-4 d-flex flex-column align-items-center mx-md-3 mb-4">
+                <h4>Export bazy danych</h4>
+                <i class="fa-solid fa-file-export pb-3"></i>
+                <p>Wybierz kolekcje z bazy danych, którą chcesz eksportować, zostanie pobrany wybrany plik JSON do późniejszego załadowania.</p>
+                
+                <form method="post">
+
+                    <select class="form-select" name="collection_select">
+                        <option value="readers_collection">Czytelnicy</option>
+                        <option value="books_collection">Książki</option>
+                        <option value="borrowing_book_collection">Wypożyczenia</option>
+                    </select>
+
+                    <input type="hidden" name="type_of_action" value="export">
+                    <button type="submit" class="btn btn-outline-secondary mt-4 mb-2">Pobierz</button>
+                </form>
+
+                {% if export_success %}
+                <p class="succes-text">{{ export_success }}</p>
+                {% endif %}
+            </div>
+
+            <div class="col-12 col-md import-export-item border text-center py-4 d-flex flex-column align-items-center mx-md-3">
+                <h4>Import bazy danych</h4>
+                <i class="fa-solid fa-file-import pb-3"></i>
+                <p>Dodaj pliki JSON aby importować dane z tych plików</p>
+                <p>Nazwy plików mają znaczenie</p>
+                
+                <form method="post" enctype="multipart/form-data">
+
+                    <div class="mb-3">
+                        <label for="formFile_first" class="form-label">Kolekcja - baza wypożyczeń - <span>borrowing_book_collection.json</span></label>
+                        <input class="form-control" type="file" id="formFile_first" name="borrowing_book_collection">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="formFile_second" class="form-label">Kolekcja - baza książek - <span>books_collection.json</span></label>
+                        <input class="form-control" type="file" id="formFile_second" name="book_collection">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="formFile_third" class="form-label">Kolekcja - baza czytelników - <span>readers_collection.json</span></label>
+                        <input class="form-control" type="file" id="formFile_third" name="readers_collection">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 col-lg-8">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">Hasło do bazy<i class="fa-solid fa-lock ms-2"></i></span>
+                                <input type="password" class="form-control" id="db_password" aria-describedby="basic-addon1" name="db_password_input">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <input type="hidden" name="type_of_action" value="import">
+                            <button type="submit" class="btn btn-outline-secondary mt-4 mt-lg-1 mb-2">Importuj</button>
+                        </div>
+                    </div>
+
+                </form>
+
+                {% if import_success %}
+                <p class="succes-text mb-0">{{ import_success }}</p>
+                {% endif %}
+
+                {% if import_error or password_error %}
+                <p class="error-text mb-0">{{ import_error }} {{ password_error }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
