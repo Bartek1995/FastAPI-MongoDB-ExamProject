@@ -9,10 +9,9 @@
 <div class="container">
 
     <section class="import-export">
-        <div class="row m-0">
     
-            <div class="col-12 col-md import-export-item export border text-center py-4 d-flex flex-column align-items-center mx-md-3 mb-4">
-                <h4>Export bazy danych</h4>
+            <div class="import-export-item export border text-center p-3 d-flex flex-column align-items-center mx-md-3 mb-4">
+                <h4 class="mb-3">Export bazy danych</h4>
                 <i class="fa-solid fa-file-export pb-3"></i>
                 <p>Wybierz kolekcje z bazy danych, którą chcesz eksportować, zostanie pobrany wybrany plik JSON do późniejszego załadowania.</p>
                 
@@ -32,9 +31,8 @@
                 <p class="succes-text">{{ export_success }}</p>
                 {% endif %}
             </div>
-
-            <div class="col-12 col-md import-export-item border text-center py-4 d-flex flex-column align-items-center mx-md-3">
-                <h4>Import bazy danych</h4>
+            <div class="import-export-item import border text-center p-3 d-flex flex-column align-items-center mx-md-3 mb-4">
+                <h4 class="mb-3">Import bazy danych</h4>
                 <i class="fa-solid fa-file-import pb-3"></i>
                 <p>Dodaj pliki JSON aby importować dane z tych plików</p>
                 <p>Nazwy plików mają znaczenie</p>
@@ -65,7 +63,7 @@
                         </div>
                         <div class="col">
                             <input type="hidden" name="type_of_action" value="import">
-                            <button type="submit" class="btn btn-outline-secondary mt-4 mt-lg-1 mb-2">Importuj</button>
+                            <button type="submit" class="btn btn-outline-secondary mt-2 mt-lg-1 mb-1">Importuj</button>
                         </div>
                     </div>
 
@@ -79,7 +77,6 @@
                 <p class="error-text mb-0">{{ import_error }} {{ password_error }}</p>
                 {% endif %}
             </div>
-        </div>
     </section>
 </div>
 {% endblock %}
