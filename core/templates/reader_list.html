@@ -57,55 +57,58 @@
     </section>
     
     <section class="book_list reader_list py-5">
-    <div class="container d-flex flex-column align-items-center text-center">
-      
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Imie i nazwisko czytelnika</th>
-            <th scope="col">Numer karty</th>
-            <th scope="col">Data urodzenia</th>
-          </tr>
-        </thead>
-        <tbody>
-          
-          {% for reader in reader_list %}
-          <tr>
-            <th scope="row">{{loop.index}}</th>
-            <td>{{reader['reader_first_name']}} {{reader['reader_second_name']}}</td>
-            <td>{{reader['card_number']}}</td>
-            <td>{{reader['born_date']}}</td>
-            <td>
-              <a data-bs-toggle="tooltip" title="Modyfikuj"  href="/dashboard/edit_reader/{{reader['_id']}}"><i class="fa-solid fa-pen-to-square m-1"></i></a>
-              <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal{{reader['_id']}}"><i class="fa-solid fa-trash-can m-1"></i></button>
-            </td>
-          </tr>
-          <div class="modal fade" id="exampleModal{{reader['_id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Potwierdzenie usunięcia</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body">
-                  <p>Czy chcesz usunąć wybranego czytelnika?</p>  
-                  <p>Imie i nazwisko autora: <span>{{reader['reader_first_name']}} {{reader['reader_second_name']}}</span></p>
-                  <p>Data urodzenia: <span>{{reader['born_date']}}</span></p>
-                  <p>Numer karty: <span>{{reader['card_number']}}</span></p>
-                </div>
-                
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
-                  <a href="/dashboard/delete/reader/{{reader['_id']}}" class="btn btn-danger">Usuń</a>
+    <div class="container">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Imie i nazwisko czytelnika</th>
+              <th scope="col">Numer karty</th>
+              <th scope="col">Data urodzenia</th>
+              <th scope="col">Akcje</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            {% for reader in reader_list %}
+            <tr>
+              <th scope="row">{{loop.index}}</th>
+              <td>{{reader['reader_first_name']}} {{reader['reader_second_name']}}</td>
+              <td>{{reader['card_number']}}</td>
+              <td>{{reader['born_date']}}</td>
+              <td>
+                <a data-bs-toggle="tooltip" title="Modyfikuj"  href="/dashboard/edit_reader/{{reader['_id']}}"><i class="fa-solid fa-pen-to-square m-1"></i></a>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal{{reader['_id']}}"><i class="fa-solid fa-trash-can m-1"></i></button>
+              </td>
+            </tr>
+            <div class="modal fade" id="exampleModal{{reader['_id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Potwierdzenie usunięcia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+  
+                  <div class="modal-body">
+                    <p>Czy chcesz usunąć wybranego czytelnika?</p>  
+                    <p>Imie i nazwisko autora: <span>{{reader['reader_first_name']}} {{reader['reader_second_name']}}</span></p>
+                    <p>Data urodzenia: <span>{{reader['born_date']}}</span></p>
+                    <p>Numer karty: <span>{{reader['card_number']}}</span></p>
+                  </div>
+                  
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                    <a href="/dashboard/delete/reader/{{reader['_id']}}" class="btn btn-danger">Usuń</a>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          {% endfor %}
-        </tbody>
-      </table>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+     
     </div>
   </section>
   

@@ -75,81 +75,82 @@
     </section>
     
     <section class="book_list py-5">
-    <div class="container d-flex flex-column align-items-center text-center">
-      
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Tytuł książki</th>
-            <th scope="col">Imie i nazwisko czytelnika</th>
-            <th scope="col">Numer karty czytelnika</th>
-            <th scope="col">Data wypożyczenia</th>
-            <th scope="col">Data oddania</th>
-            <th scope="col">Status</th>
-            <th scope="col">Akcje</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for element in borrowing_book_list %}
-          <tr>
-            <th scope="row">{{loop.index}}</th>
-            <td>{{element['book_title']}}</td>
-            <td>{{element['reader_full_name']}}</td>
-            <td>{{element['card_number']}}</td>
-            <td>{{element['borrowing_date_start']}}</td>
-            <td>
-              {% if element['borrowing_date_end'] is none %}
-              Brak daty oddania
-              {% else %}
-              {{element['borrowing_date_end']}}
-              {% endif %}
-            </td>
-            <td>
-              {% if element['is_finished'] is true %}
-              Oddana <i class="fa-solid fa-check"></i>
-              {% else %}
-              Nie oddana <i class="fa-solid fa-xmark"></i> 
-              {% endif %}
-            </td>
-            <td>
-              {% if element['is_finished'] is not true %}
-              <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal{{element['_id']}}"><i class="fa-solid fa-circle-check"></i></button>
-              {% else %}
-              Brak dostepnych akcji
-              {% endif %}
-            </td>
-          </tr>
-          <div class="modal fade" id="exampleModal{{element['_id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">Rejestracja zakończenia wypożyczenia</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-        
-                <div class="modal-body">
-
-                  <p>Data pobrania książki: <span>{{element['borrowing_date_start']}}</span></p>
-
-                  <form method="post">
-                      <div class="input-group">
-                        <span class="input-group-text">Data oddania</span>
-                        <input type="date" aria-label="Data oddania" class="form-control" name="modified_borrowing_date_end" required>
+    <div class="container">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Tytuł książki</th>
+              <th scope="col">Imie i nazwisko czytelnika</th>
+              <th scope="col">Numer karty czytelnika</th>
+              <th scope="col">Data wypożyczenia</th>
+              <th scope="col">Data oddania</th>
+              <th scope="col">Status</th>
+              <th scope="col">Akcje</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for element in borrowing_book_list %}
+            <tr>
+              <th scope="row">{{loop.index}}</th>
+              <td>{{element['book_title']}}</td>
+              <td>{{element['reader_full_name']}}</td>
+              <td>{{element['card_number']}}</td>
+              <td>{{element['borrowing_date_start']}}</td>
+              <td>
+                {% if element['borrowing_date_end'] is none %}
+                Brak daty oddania
+                {% else %}
+                {{element['borrowing_date_end']}}
+                {% endif %}
+              </td>
+              <td>
+                {% if element['is_finished'] is true %}
+                Oddana <i class="fa-solid fa-check"></i>
+                {% else %}
+                Nie oddana <i class="fa-solid fa-xmark"></i> 
+                {% endif %}
+              </td>
+              <td>
+                {% if element['is_finished'] is not true %}
+                <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal{{element['_id']}}"><i class="fa-solid fa-circle-check"></i></button>
+                {% else %}
+                Brak dostepnych akcji
+                {% endif %}
+              </td>
+            </tr>
+            <div class="modal fade" id="exampleModal{{element['_id']}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Rejestracja zakończenia wypożyczenia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+          
+                  <div class="modal-body">
+  
+                    <p>Data pobrania książki: <span>{{element['borrowing_date_start']}}</span></p>
+  
+                    <form method="post">
+                        <div class="input-group">
+                          <span class="input-group-text">Data oddania</span>
+                          <input type="date" aria-label="Data oddania" class="form-control" name="modified_borrowing_date_end" required>
+                        </div>
                       </div>
-                    </div>
-                    <input type="hidden" value="{{element['_id']}}" name="borrowing_book_id">
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Zamknij</button>
-                      <button type="submit" class="btn btn-outline-success">Zakończ wypożyczenie</button>
-                    </form>
+                      <input type="hidden" value="{{element['_id']}}" name="borrowing_book_id">
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Zamknij</button>
+                        <button type="submit" class="btn btn-outline-success">Zakończ wypożyczenie</button>
+                      </form>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          {% endfor %}
-        </tbody>
-      </table>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
