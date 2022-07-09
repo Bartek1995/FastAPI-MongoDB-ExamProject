@@ -114,7 +114,7 @@ header {
     i {
       font-size: 20px;
     }
-    td {
+    .actions {
       white-space: nowrap;
     }
   }
@@ -148,9 +148,6 @@ header {
     font-weight: bold;
   }
 
-  .export {
-    height: 320px;
-  }
 }
 
 .import-export-item {
@@ -164,4 +161,18 @@ header {
 
 .import-export-item:hover {
   transform: scale(1.05);
+}
+
+
+@media (min-width: 992px) {
+  .import-export {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+
+  .import-export-item {
+    width: 50%;
+  }
 }
