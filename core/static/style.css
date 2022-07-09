@@ -28,13 +28,11 @@ header {
   background-size: cover;
   z-index: 5;
 }
-
 header h2 {
   color: white;
   text-transform: uppercase;
   font-size: 40px;
 }
-
 header form {
   font-size: 20px;
 }
@@ -51,26 +49,21 @@ header form {
   transition: transform 0.3s;
   transition: transform 0.3s, -webkit-transform 0.3s;
 }
-
 .info-boxes .information-box .fa-book,
 .info-boxes .information-box .fa-people-group,
 .info-boxes .information-box .fa-hand-holding {
   font-size: 30px;
 }
-
 .info-boxes .information-box .fa-plus {
   font-size: 20px;
 }
-
 .info-boxes .information-box p,
 .info-boxes .information-box span {
   font-size: 25px;
 }
-
 .info-boxes .information-box span {
   font-weight: bold;
 }
-
 .info-boxes .information-box:hover {
   -webkit-transform: scale(1.05);
           transform: scale(1.05);
@@ -83,37 +76,29 @@ header form {
 .book_list table a {
   color: black;
 }
-
 .book_list table button {
   background-color: transparent;
   border: none;
 }
-
 .book_list table .fa-pen-to-square:hover {
   color: gold;
 }
-
 .book_list table .fa-trash-can:hover {
   color: red;
 }
-
 .book_list table .fa-circle-info:hover {
-  color: #9fa1a7;
+  color: rgb(159, 161, 167);
 }
-
 .book_list table .fa-check {
-  color: #19b619;
+  color: rgb(25, 182, 25);
 }
-
 .book_list table .fa-xmark {
   color: red;
 }
-
 .book_list table i {
   font-size: 20px;
 }
-
-.book_list table td {
+.book_list table .actions {
   white-space: nowrap;
 }
 
@@ -124,23 +109,16 @@ header form {
 .import-export .form-select {
   max-width: 400px;
 }
-
 .import-export .fa-solid {
   font-size: 30px;
 }
-
 .import-export .succes-text {
   color: green;
   font-weight: bold;
 }
-
 .import-export .error-text {
   color: red;
   font-weight: bold;
-}
-
-.import-export .export {
-  height: 320px;
 }
 
 .import-export-item {
@@ -151,7 +129,6 @@ header form {
   -webkit-box-shadow: 1px 1px 5px grey;
           box-shadow: 1px 1px 5px grey;
 }
-
 .import-export-item span {
   font-weight: bold;
 }
@@ -160,4 +137,24 @@ header form {
   -webkit-transform: scale(1.05);
           transform: scale(1.05);
 }
-/*# sourceMappingURL=style.css.map */
+
+@media (min-width: 992px) {
+  .import-export {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: flex-start;
+  }
+
+  .import-export-item {
+    width: 50%;
+  }
+}/*# sourceMappingURL=style.css.map */
